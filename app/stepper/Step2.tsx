@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useCalculadoraStore } from "../store/useCalculadoraStore";
 import { DEFAULT_SOCIAL_SECURITY_PERCENTAGE } from "../store/calculations";
+import { useI18n } from "../i18n/useI18n";
 
 type EmploymentForm = {
   companyName: string;
@@ -30,6 +31,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   const pagadores = useCalculadoraStore((state) => state.pagadores);
   const addPagador = useCalculadoraStore((state) => state.addPagador);
   const currentYearStart = `${new Date().getFullYear()}-01-01`;
+  const { t } = useI18n();
   const fieldClass =
     "w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300";
 
@@ -60,14 +62,14 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
 
   return (
     <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300"> Añadir Empleo</h1>
+      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300"> {t("step2.title")}</h1>
       <h2 className="text-sm text-start text-gray-500 dark:text-gray-300 mb-8">
-        Añade los datos laborales para estimar correctamente tus retenciones y base imponible.
+        {t("step2.subtitle")}
       </h2>
 
       <form className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 w-full">
-          <label className="font-semibold"> Nombre de la empresa </label>
+          <label className="font-semibold"> {t("step2.companyName")} </label>
           <input
             type="text"
             className={fieldClass}
@@ -78,7 +80,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           <div className="flex flex-col gap-2 w-full">
-            <label className="font-semibold"> Salario Bruto Anual </label>
+            <label className="font-semibold"> {t("step2.annualGrossSalary")} </label>
             <input
               type="number"
               className={fieldClass}
@@ -87,7 +89,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
             />
           </div>
           <div className="flex flex-col gap-2 w-full">
-            <label className="font-semibold"> Retención IRPF (%) </label>
+            <label className="font-semibold"> {t("step2.irpfWithholding")} </label>
             <input
               type="number"
               className={fieldClass}
@@ -98,7 +100,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         </div>
 
         <div className="flex flex-col gap-2 w-full">
-          <label className="font-semibold"> Periodo de contratación </label>
+          <label className="font-semibold"> {t("step2.employmentPeriod")} </label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             <div className="flex flex-col gap-2">
               <input
@@ -123,7 +125,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
                     : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                 }`}
               >
-                {isStartOfYearLocked ? "Inicio de año activado" : "Marcar inicio de año"}
+                {isStartOfYearLocked ? t("step2.startOfYearEnabled") : t("step2.markStartOfYear")}
               </button>
             </div>
             <input
@@ -138,9 +140,9 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/70">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-200">Modo experto (situación especial)</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">{t("step2.expertModeTitle")}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Actívalo si eres autónomo, funcionario o tienes un régimen de cotización distinto.
+                {t("step2.expertModeSubtitle")}
               </p>
             </div>
             <button
@@ -162,13 +164,13 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
 
           {employmentForm.expertMode && (
             <div className="flex flex-col gap-2">
-              <label className="font-semibold"> Cuota SS estimada (%) </label>
+              <label className="font-semibold"> {t("step2.estimatedSocialSecurity")} </label>
               <input
                 type="number"
                 className={fieldClass}
                 value={employmentForm.socialSecurityPercentage}
                 onChange={(event) => handleFormChange("socialSecurityPercentage", event.target.value)}
-                placeholder="Ej: 6.4 o 0"
+                placeholder={t("step2.estimatedSocialSecurityPlaceholder")}
               />
             </div>
           )}
@@ -176,7 +178,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
       </form>
 
       <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800/70 dark:text-gray-300">
-        Empleos añadidos: <span className="font-semibold">{pagadores.length}</span>
+        {t("step2.employmentsAdded", { count: pagadores.length })}
       </div>
 
       <div className="flex flex-1 items-center justify-between mt-8">
@@ -186,7 +188,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           className="px-6 py-3 rounded-lg text-gray-800 hover:bg-gray-700 transition-colors"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-          Volver
+          {t("step2.back")}
         </button>
         <div className="flex items-center gap-3">
           <button
@@ -195,14 +197,14 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
             className="px-6 py-3 rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            Añadir empleo
+            {t("step2.addEmployment")}
           </button>
           <button
             type="button"
             onClick={onNext}
             className="px-6 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
           >
-            Siguiente
+            {t("step2.next")}
             <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
           </button>
         </div>

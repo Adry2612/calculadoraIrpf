@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCalculadoraStore } from "../store/useCalculadoraStore";
+import { useI18n } from "../i18n/useI18n";
 
 type Step4Props = {
   onBack: () => void;
@@ -9,6 +10,7 @@ type Step4Props = {
 
 export function Step4({ onBack }: Step4Props) {
   const router = useRouter();
+  const { t } = useI18n();
 
   const { addPagadorFuturo, pagadorFuturo } = useCalculadoraStore();
 
@@ -31,36 +33,36 @@ export function Step4({ onBack }: Step4Props) {
 
   return (
     <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300"> Empleo futuro </h1>
+      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300"> {t("step4.title")} </h1>
       <h2 className="text-sm text-start text-gray-500 dark:text-gray-300 mb-8">
-        Indica una previsión de tu próximo empleo para estimar el impacto fiscal futuro.
+        {t("step4.subtitle")}
       </h2>
 
       <form className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 w-full">
-          <label className="font-semibold"> Empresa (opcional) </label>
+          <label className="font-semibold"> {t("step4.companyOptional")} </label>
           <input
             type="text"
             className={fieldClass}
             value={pagadorFuturo.name}
             onChange={(event) => handleChange("name", event.target.value)}
-            placeholder="Nombre de la empresa"
+            placeholder={t("step4.companyPlaceholder")}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           <div className="flex flex-col gap-2 w-full">
-            <label className="font-semibold"> Salario bruto anual esperado </label>
+            <label className="font-semibold"> {t("step4.expectedAnnualGross")} </label>
             <input
               type="number"
               className={fieldClass}
               value={pagadorFuturo.grossSalary || ""}
               onChange={(event) => handleChange("grossSalary", event.target.value)}
-              placeholder="Ej: 32000"
+              placeholder={t("step4.expectedAnnualGrossPlaceholder")}
             />
           </div>
           <div className="flex flex-col gap-2 w-full">
-            <label className="font-semibold"> Fecha prevista de inicio </label>
+            <label className="font-semibold"> {t("step4.expectedStartDate")} </label>
             <input
               type="date"
               className={fieldClass}
@@ -71,7 +73,7 @@ export function Step4({ onBack }: Step4Props) {
         </div>
 
         <div className="flex flex-col gap-2 w-full">
-          <label className="font-semibold"> Pagas anuales </label>
+          <label className="font-semibold"> {t("step4.annualPayPeriods")} </label>
           <div className="inline-flex w-fit rounded-full border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800">
             <button
               type="button"
@@ -82,7 +84,7 @@ export function Step4({ onBack }: Step4Props) {
                   : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
               }`}
             >
-              12 pagas
+              {t("step4.twelvePays")}
             </button>
             <button
               type="button"
@@ -93,7 +95,7 @@ export function Step4({ onBack }: Step4Props) {
                   : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
               }`}
             >
-              14 pagas
+              {t("step4.fourteenPays")}
             </button>
           </div>
         </div>
@@ -105,20 +107,20 @@ export function Step4({ onBack }: Step4Props) {
           onClick={onBack}
           className="px-6 py-3 rounded-lg text-gray-800 hover:bg-gray-700 transition-colors"
         >
-          Volver
+          {t("step4.back")}
         </button>
         <button
           type="button"
           onClick={() => router.push("/summary")}
           className="px-6 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
         >
-          Finalizar
+          {t("step4.finish")}
         </button>
       </div>
 
       <div className="flex flex-row justify-center items-center bg-gray-100 mt-8 p-4 rounded-lg">
         <p className="text-sm text-gray-500 dark:text-gray-300">
-          Este paso es orientativo y no modifica los pagadores ya registrados, solo sirve para proyectar escenarios futuros.
+          {t("step4.note")}
         </p>
       </div>
     </div>

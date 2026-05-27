@@ -35,6 +35,8 @@ interface PersonalInfo {
 }
 
 interface CalculadoraStore {
+  locale: "es" | "ca" | "gl" | "eu" | "oc";
+  setLocale: (locale: "es" | "ca" | "gl" | "eu" | "oc") => void;
   step: number;
   setStep: (step: number) => void;
   nextStep: () => void;
@@ -66,6 +68,8 @@ interface CalculadoraStore {
 }
 
 export const useCalculadoraStore = create<CalculadoraStore>((set, get) => ({
+  locale: "es",
+  setLocale: (locale) => set({ locale }),
   step: 1,
   setStep: (step) => set({ step }),
   nextStep: () =>

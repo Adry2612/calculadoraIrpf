@@ -4,10 +4,12 @@ import { Step2 } from "./Step2";
 import { useCalculadoraStore } from "../store/useCalculadoraStore"; 
 import { Step3 } from "./Step3";
 import { Step4 } from "./Step4";
+import { useI18n } from "../i18n/useI18n";
 
 export default function Home() {
   const step = useCalculadoraStore((state) => state.step);
   const setStep = useCalculadoraStore((state) => state.setStep);
+  const { t } = useI18n();
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black p-16">
@@ -15,7 +17,7 @@ export default function Home() {
         
         {/* Stepper */}
         <div className="flex flex-col w-1/3 p-8">
-          <h1 className="text-sm mb-3 text-start text-gray-500 dark:text-gray-300"> PASO {step} DE 4 </h1>
+          <h1 className="text-sm mb-3 text-start text-gray-500 dark:text-gray-300"> {t("stepper.stepOf", { step })} </h1>
           <span className="border-b-3 border-gray-800 dark:border-gray-600" />
         </div>
 
