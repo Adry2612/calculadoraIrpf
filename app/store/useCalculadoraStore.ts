@@ -14,6 +14,9 @@ interface Pagador {
   irpfPercentage: number;
   startDate: string;
   endDate: string;
+  payPeriods: 12 | 14;
+  extraPaymentsProrated?: boolean;
+  extraPaymentMonths?: [number, number];
   salaryIncludesSocialSecurity?: boolean;
   socialSecurityPercentage?: number;
   annualOtherDeductions?: number;
@@ -32,6 +35,7 @@ interface PersonalInfo {
   childrenCount: number;
   discapacidad: boolean;
   ascendientesACargo: boolean;
+  retentionPreference: "devolucion-segura" | "blindado" | "ajustado";
 }
 
 interface CalculadoraStore {
@@ -41,12 +45,22 @@ interface CalculadoraStore {
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
-  calculateTotalForPeriod: (startDate: string, endDate: string, annualGrossSalary: number) => number;
+  calculateTotalForPeriod: (
+    startDate: string,
+    endDate: string,
+    annualGrossSalary: number,
+    payPeriods?: 12 | 14,
+    extraPaymentsProrated?: boolean,
+    extraPaymentMonths?: [number, number]
+  ) => number;
   calculateTotalIrpfWithheld: (
     startDate: string,
     endDate: string,
     annualGrossSalary: number,
-    irpfPercentage: number
+    irpfPercentage: number,
+    payPeriods?: 12 | 14,
+    extraPaymentsProrated?: boolean,
+    extraPaymentMonths?: [number, number]
   ) => number;
   getTotalGrossAllPayers: () => number;
   getTotalIrpfAllPayers: () => number;
@@ -99,6 +113,7 @@ export const useCalculadoraStore = create<CalculadoraStore>((set, get) => ({
     childrenCount: 0,
     discapacidad: false,
     ascendientesACargo: false,
+    retentionPreference: "ajustado",
   },
   setDatosPersonales: (data) => set({ datosPersonales: data }),
   pagadores: [],
@@ -108,10 +123,8 @@ export const useCalculadoraStore = create<CalculadoraStore>((set, get) => ({
     startDate: "",
     payPeriods: 12,
   },
-  addPagador: (pagador) =>
-    set((state) => ({ pagadores: [...state.pagadores, pagador] })),
-  addPagadorFuturo: (update) =>
-    set((state) => ({ pagadorFuturo: update(state.pagadorFuturo) })),
+  addPagador: (pagador) => set((state) => ({ pagadores: [...state.pagadores, pagador] })),
+  addPagadorFuturo: (update) => set((state) => ({ pagadorFuturo: update(state.pagadorFuturo) })),
   updatePersonalInfo: (info) =>
     set((state) => ({
       datosPersonales: { ...state.datosPersonales, ...info },

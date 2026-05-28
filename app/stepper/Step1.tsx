@@ -2,7 +2,12 @@
 
 import { AUTONOMOUS_COMMUNITIES, CIVIL_STATUS_OPTIONS } from "./step1.data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faChevronDown, faLock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faArrowRight,
+  faChevronDown,
+  faLock,
+} from "@fortawesome/free-solid-svg-icons";
 import { useCalculadoraStore } from "../store/useCalculadoraStore";
 import { useI18n } from "../i18n/useI18n";
 
@@ -16,6 +21,19 @@ export function Step1({ onNext }: Step1Props) {
   const { t } = useI18n();
   const fieldClass =
     "w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300";
+  const retentionOptions = [
+    { value: "devolucion-segura", label: t("step1.retentionSafeRefund") },
+    { value: "blindado", label: t("step1.retentionShielded") },
+    { value: "ajustado", label: t("step1.retentionAdjusted") },
+  ] as const;
+  const retentionInfoByOption: Record<
+    "devolucion-segura" | "blindado" | "ajustado",
+    string
+  > = {
+    "devolucion-segura": t("step1.retentionSafeRefundInfo"),
+    blindado: t("step1.retentionShieldedInfo"),
+    ajustado: t("step1.retentionAdjustedInfo"),
+  };
 
   const handleDecreaseChildren = () => {
     updatePersonalInfo({ childrenCount: Math.max(0, datosPersonales.childrenCount - 1) });
@@ -27,7 +45,10 @@ export function Step1({ onNext }: Step1Props) {
 
   return (
     <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300"> {t("step1.title")}</h1>
+      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300">
+        {" "}
+        {t("step1.title")}
+      </h1>
       <h2 className="text-sm text-start text-gray-500 dark:text-gray-300 mb-8">
         {t("step1.subtitle")}
       </h2>
@@ -125,22 +146,26 @@ export function Step1({ onNext }: Step1Props) {
           <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800/70">
               <div>
-                <p className="font-semibold text-gray-800 dark:text-gray-200">{t("step1.disabilityTitle")}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t("step1.disabilitySubtitle")}</p>
+                <p className="font-semibold text-gray-800 dark:text-gray-200">
+                  {t("step1.disabilityTitle")}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t("step1.disabilitySubtitle")}
+                </p>
               </div>
               <button
                 type="button"
                 role="switch"
-                aria-checked={datosPersonales.discapacity}
+                aria-checked={datosPersonales.discapacidad}
                 aria-label={t("step1.disabilitySwitchAria")}
-                onClick={() => updatePersonalInfo({ discapacity: !datosPersonales.discapacity })}
+                onClick={() => updatePersonalInfo({ discapacidad: !datosPersonales.discapacidad })}
                 className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors ${
-                  datosPersonales.discapacity ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                  datosPersonales.discapacidad ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
                 }`}
               >
                 <span
                   className={`inline-block h-6 w-6 rounded-full bg-white shadow transition-transform duration-200 ${
-                    datosPersonales.discapacity ? "translate-x-7" : "translate-x-1"
+                    datosPersonales.discapacidad ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>
@@ -149,17 +174,25 @@ export function Step1({ onNext }: Step1Props) {
           <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800/70">
               <div>
-                <p className="font-semibold text-gray-800 dark:text-gray-200">{t("step1.ascendantsTitle")}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t("step1.ascendantsSubtitle")}</p>
+                <p className="font-semibold text-gray-800 dark:text-gray-200">
+                  {t("step1.ascendantsTitle")}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t("step1.ascendantsSubtitle")}
+                </p>
               </div>
               <button
                 type="button"
                 role="switch"
                 aria-checked={datosPersonales.ascendientesACargo}
                 aria-label={t("step1.ascendantsSwitchAria")}
-                onClick={() => updatePersonalInfo({ ascendientesACargo: !datosPersonales.ascendientesACargo })}
+                onClick={() =>
+                  updatePersonalInfo({ ascendientesACargo: !datosPersonales.ascendientesACargo })
+                }
                 className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors ${
-                  datosPersonales.ascendientesACargo ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                  datosPersonales.ascendientesACargo
+                    ? "bg-green-500"
+                    : "bg-gray-200 dark:bg-gray-700"
                 }`}
               >
                 <span
@@ -171,12 +204,45 @@ export function Step1({ onNext }: Step1Props) {
             </div>
           </div>
         </div>
+
+        <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/70">
+          <div>
+            <p className="font-semibold text-gray-800 dark:text-gray-200">
+              {t("step1.retentionModeTitle")}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {t("step1.retentionModeSubtitle")}
+            </p>
+          </div>
+
+          <div className="inline-flex w-fit rounded-full border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800">
+            {retentionOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => updatePersonalInfo({ retentionPreference: option.value })}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  datosPersonales.retentionPreference === option.value
+                    ? "bg-gray-800 text-white"
+                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          {datosPersonales.retentionPreference && (
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {retentionInfoByOption[datosPersonales.retentionPreference]}
+            </p>
+          )}
+        </div>
       </form>
-      
-      <div className="flex flex-row justify-center items-center bg-gray-100 mt-8 p-4 rounded-lg"> 
+
+      <div className="flex flex-row justify-center items-center bg-gray-100 mt-8 p-4 rounded-lg">
         <FontAwesomeIcon icon={faLock} className="text-gray-500 dark:text-gray-300 mr-6" />
-        <h2 className="text-sm text-gray-500 dark:text-gray-300">
-          {t("step1.privacyText")} </h2>
+        <h2 className="text-sm text-gray-500 dark:text-gray-300">{t("step1.privacyText")} </h2>
       </div>
 
       <div className="flex flex-1 items-center justify-between mt-8">
@@ -195,7 +261,7 @@ export function Step1({ onNext }: Step1Props) {
           {t("step1.next")}
           <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
         </button>
-    </div>
+      </div>
     </div>
   );
 }

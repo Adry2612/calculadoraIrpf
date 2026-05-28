@@ -4,6 +4,9 @@ export type PayerCalculationInput = {
   irpfPercentage: number;
   startDate: string;
   endDate: string;
+  payPeriods?: 12 | 14;
+  extraPaymentsProrated?: boolean;
+  extraPaymentMonths?: [number, number];
   salaryIncludesSocialSecurity?: boolean;
   socialSecurityPercentage?: number;
   annualOtherDeductions?: number;
@@ -13,6 +16,7 @@ export type FuturePayerCalculationInput = {
   name: string;
   startDate: string;
   annualGross: string | number | readonly string[] | undefined;
+  payPeriods?: 12 | 14;
 };
 
 export type IrpfBracket = {
@@ -42,7 +46,7 @@ export type FutureIrpfRecommendation = {
 export const IRPF_BRACKETS: IrpfBracket[] = [
   { min: 0, max: 12450, rate: 0.19 },
   { min: 12450, max: 20200, rate: 0.24 },
-  { min: 20200, max: 35200, rate: 0.30 },
+  { min: 20200, max: 35200, rate: 0.3 },
   { min: 35200, max: 60000, rate: 0.37 },
   { min: 60000, max: 300000, rate: 0.45 },
   { min: 300000, max: null, rate: 0.47 },
@@ -66,7 +70,11 @@ const getDaysInYear = (year: number) => {
   return isLeapYear ? 366 : 365;
 };
 
-const getCurrentYearPeriod = (startDate: string, endDate: string) => {
+const getCurrentYearPeriod = (
+  startDate: string,
+  endDate: string,
+  capToCurrentMonth = false
+) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -76,7 +84,13 @@ const getCurrentYearPeriod = (startDate: string, endDate: string) => {
 
   const { yearStart, yearEnd } = getCurrentYearBounds();
   const normalizedStart = start > yearStart ? start : yearStart;
-  const normalizedEnd = end < yearEnd ? end : yearEnd;
+  let normalizedEnd = end < yearEnd ? end : yearEnd;
+
+  if (capToCurrentMonth) {
+    const now = new Date();
+    const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    normalizedEnd = endOfCurrentMonth < normalizedEnd ? endOfCurrentMonth : normalizedEnd;
+  }
 
   if (normalizedEnd < normalizedStart) {
     return null;
@@ -88,29 +102,109 @@ const getCurrentYearPeriod = (startDate: string, endDate: string) => {
   };
 };
 
-export const calculateTotalForPeriod = (startDate: string, endDate: string, annualGrossSalary: number) => {
-  const normalizedPeriod = getCurrentYearPeriod(startDate, endDate);
+export const calculateTotalForPeriod = (
+  startDate: string,
+  endDate: string,
+  annualGrossSalary: number,
+  payPeriods: 12 | 14 = 12,
+  extraPaymentsProrated = false,
+  extraPaymentMonths?: [number, number],
+  capToCurrentMonth = false
+) => {
+  const normalizedPeriod = getCurrentYearPeriod(startDate, endDate, capToCurrentMonth);
   if (!normalizedPeriod || !Number.isFinite(annualGrossSalary) || annualGrossSalary <= 0) {
     return 0;
   }
 
   const millisecondsPerDay = 1000 * 60 * 60 * 24;
   const daysWorked =
-    Math.floor((normalizedPeriod.normalizedEnd.getTime() - normalizedPeriod.normalizedStart.getTime()) / millisecondsPerDay) +
-    1;
+    Math.floor(
+      (normalizedPeriod.normalizedEnd.getTime() - normalizedPeriod.normalizedStart.getTime()) /
+        millisecondsPerDay
+    ) + 1;
   const { currentYear } = getCurrentYearBounds();
-  const dailyGrossSalary = annualGrossSalary / getDaysInYear(currentYear);
+  const daysInYear = getDaysInYear(currentYear);
+
+  if (payPeriods === 14 && !extraPaymentsProrated) {
+    const extraPayments = getExtraPaymentCountForPeriod(
+      startDate,
+      endDate,
+      14,
+      false,
+      extraPaymentMonths
+    );
+    const baseAnnualGross = annualGrossSalary * (12 / 14);
+    const baseGrossForPeriod = (baseAnnualGross / daysInYear) * daysWorked;
+    const extraGrossForPeriod = (annualGrossSalary / 14) * extraPayments;
+
+    return Number((baseGrossForPeriod + extraGrossForPeriod).toFixed(2));
+  }
+
+  const dailyGrossSalary = annualGrossSalary / daysInYear;
 
   return Number((dailyGrossSalary * daysWorked).toFixed(2));
+};
+
+export const getExtraPaymentCountForPeriod = (
+  startDate: string,
+  endDate: string,
+  payPeriods: 12 | 14 = 12,
+  extraPaymentsProrated = false,
+  extraPaymentMonths: [number, number] = [6, 12],
+  capToCurrentMonth = false
+) => {
+  if (payPeriods !== 14 || extraPaymentsProrated) {
+    return 0;
+  }
+
+  const normalizedPeriod = getCurrentYearPeriod(startDate, endDate, capToCurrentMonth);
+  if (!normalizedPeriod) {
+    return 0;
+  }
+
+  const { currentYear } = getCurrentYearBounds();
+  const safeMonths = extraPaymentMonths.map((month) => {
+    if (!Number.isInteger(month) || month < 1 || month > 12) {
+      return 12;
+    }
+    return month;
+  }) as [number, number];
+
+  const extraPaymentDates = safeMonths.map((month) =>
+    new Date(currentYear, month, 0)
+  );
+
+  return extraPaymentDates.reduce((count, extraDate) => {
+    if (
+      extraDate >= normalizedPeriod.normalizedStart &&
+      extraDate <= normalizedPeriod.normalizedEnd
+    ) {
+      return count + 1;
+    }
+
+    return count;
+  }, 0);
 };
 
 export const calculateTotalIrpfWithheld = (
   startDate: string,
   endDate: string,
   annualGrossSalary: number,
-  irpfPercentage: number
+  irpfPercentage: number,
+  payPeriods: 12 | 14 = 12,
+  extraPaymentsProrated = false,
+  extraPaymentMonths?: [number, number],
+  capToCurrentMonth = false
 ) => {
-  const totalForPeriod = calculateTotalForPeriod(startDate, endDate, annualGrossSalary);
+  const totalForPeriod = calculateTotalForPeriod(
+    startDate,
+    endDate,
+    annualGrossSalary,
+    payPeriods,
+    extraPaymentsProrated,
+    extraPaymentMonths,
+    capToCurrentMonth
+  );
   return Number((totalForPeriod * (irpfPercentage / 100)).toFixed(2));
 };
 
@@ -118,6 +212,10 @@ export const calculateSocialSecurityForPeriod = (
   startDate: string,
   endDate: string,
   annualGrossSalary: number,
+  payPeriods: 12 | 14 = 12,
+  extraPaymentsProrated = false,
+  extraPaymentMonths: [number, number] | undefined = undefined,
+  capToCurrentMonth = false,
   salaryIncludesSocialSecurity = false,
   socialSecurityPercentage = DEFAULT_SOCIAL_SECURITY_PERCENTAGE
 ) => {
@@ -125,35 +223,65 @@ export const calculateSocialSecurityForPeriod = (
     return 0;
   }
 
-  const grossForPeriod = calculateTotalForPeriod(startDate, endDate, annualGrossSalary);
+  const grossForPeriod = calculateTotalForPeriod(
+    startDate,
+    endDate,
+    annualGrossSalary,
+    payPeriods,
+    extraPaymentsProrated,
+    extraPaymentMonths,
+    capToCurrentMonth
+  );
   return Number((grossForPeriod * (socialSecurityPercentage / 100)).toFixed(2));
 };
 
 export const calculateOtherDeductionsForPeriod = (
   startDate: string,
   endDate: string,
-  annualOtherDeductions: number
+  annualOtherDeductions: number,
+  capToCurrentMonth = false
 ) => {
   if (!Number.isFinite(annualOtherDeductions) || annualOtherDeductions <= 0) {
     return 0;
   }
 
-  return calculateTotalForPeriod(startDate, endDate, annualOtherDeductions);
+  return calculateTotalForPeriod(
+    startDate,
+    endDate,
+    annualOtherDeductions,
+    12,
+    false,
+    undefined,
+    capToCurrentMonth
+  );
 };
 
 export const getNetWorkIncomeForPeriod = (pagador: PayerCalculationInput) => {
-  const grossForPeriod = calculateTotalForPeriod(pagador.startDate, pagador.endDate, pagador.grossSalary);
+  const grossForPeriod = calculateTotalForPeriod(
+    pagador.startDate,
+    pagador.endDate,
+    pagador.grossSalary,
+    pagador.payPeriods ?? 12,
+    pagador.extraPaymentsProrated ?? false,
+    pagador.extraPaymentMonths,
+    true
+  );
   const socialSecurity = calculateSocialSecurityForPeriod(
     pagador.startDate,
     pagador.endDate,
     pagador.grossSalary,
+    pagador.payPeriods ?? 12,
+    pagador.extraPaymentsProrated ?? false,
+    pagador.extraPaymentMonths,
+    true,
     pagador.salaryIncludesSocialSecurity,
     pagador.socialSecurityPercentage ?? DEFAULT_SOCIAL_SECURITY_PERCENTAGE
   );
   const otherDeductions = calculateOtherDeductionsForPeriod(
     pagador.startDate,
     pagador.endDate,
-    pagador.annualOtherDeductions ?? 0
+    pagador.annualOtherDeductions ?? 0,
+    true
   );
 
   return Number(Math.max(0, grossForPeriod - socialSecurity - otherDeductions).toFixed(2));
@@ -163,7 +291,17 @@ export const getTotalGrossAllPayers = (pagadores: PayerCalculationInput[]) =>
   Number(
     pagadores
       .reduce(
-        (total, pagador) => total + calculateTotalForPeriod(pagador.startDate, pagador.endDate, pagador.grossSalary),
+        (total, pagador) =>
+          total +
+          calculateTotalForPeriod(
+            pagador.startDate,
+            pagador.endDate,
+            pagador.grossSalary,
+            pagador.payPeriods ?? 12,
+            pagador.extraPaymentsProrated ?? false,
+            pagador.extraPaymentMonths,
+            true
+          ),
         0
       )
       .toFixed(2)
@@ -179,7 +317,11 @@ export const getTotalIrpfAllPayers = (pagadores: PayerCalculationInput[]) =>
             pagador.startDate,
             pagador.endDate,
             pagador.grossSalary,
-            pagador.irpfPercentage
+            pagador.irpfPercentage,
+            pagador.payPeriods ?? 12,
+            pagador.extraPaymentsProrated ?? false,
+            pagador.extraPaymentMonths,
+            true
           ),
         0
       )
@@ -188,9 +330,7 @@ export const getTotalIrpfAllPayers = (pagadores: PayerCalculationInput[]) =>
 
 export const getTotalNetWorkIncomeAllPayers = (pagadores: PayerCalculationInput[]) =>
   Number(
-    pagadores
-      .reduce((total, pagador) => total + getNetWorkIncomeForPeriod(pagador), 0)
-      .toFixed(2)
+    pagadores.reduce((total, pagador) => total + getNetWorkIncomeForPeriod(pagador), 0).toFixed(2)
   );
 
 export const getBaseLiquidable = (totalBruto: number, minimoPersonal = 5550) => {
@@ -198,7 +338,10 @@ export const getBaseLiquidable = (totalBruto: number, minimoPersonal = 5550) => 
   return Number(Math.max(0, baseLiquidable).toFixed(2));
 };
 
-export const calculateIrpfFromBase = (baseLiquidable: number, brackets: IrpfBracket[] = IRPF_BRACKETS) => {
+export const calculateIrpfFromBase = (
+  baseLiquidable: number,
+  brackets: IrpfBracket[] = IRPF_BRACKETS
+) => {
   if (baseLiquidable <= 0) {
     return 0;
   }
@@ -256,30 +399,54 @@ export const getIrpfSummaryWithFuturePayer = (
   const totalBrutoFuturo = calculateTotalForPeriod(
     pagadorFuturo.startDate,
     lastDayOfYear,
-    Number.isFinite(annualGross) ? annualGross : 0
+    Number.isFinite(annualGross) ? annualGross : 0,
+    pagadorFuturo.payPeriods ?? 12,
+    false,
+    undefined,
+    false
   );
   const socialSecurityFuturo = calculateSocialSecurityForPeriod(
     pagadorFuturo.startDate,
     lastDayOfYear,
     Number.isFinite(annualGross) ? annualGross : 0,
+    pagadorFuturo.payPeriods ?? 12,
+    false,
+    undefined,
+    false,
     false,
     DEFAULT_SOCIAL_SECURITY_PERCENTAGE
   );
-  const totalRendimientoNetoFuturo = Number(Math.max(0, totalBrutoFuturo - socialSecurityFuturo).toFixed(2));
+  const totalRendimientoNetoFuturo = Number(
+    Math.max(0, totalBrutoFuturo - socialSecurityFuturo).toFixed(2)
+  );
 
   const totalBrutoGeneral = Number((totalBrutoTodosPagadores + totalBrutoFuturo).toFixed(2));
-  const totalRendimientoNetoGeneral = Number((totalRendimientoNetoTodosPagadores + totalRendimientoNetoFuturo).toFixed(2));
+  const totalRendimientoNetoGeneral = Number(
+    (totalRendimientoNetoTodosPagadores + totalRendimientoNetoFuturo).toFixed(2)
+  );
 
-  return getIrpfSummary(totalBrutoGeneral, totalIrpf, minimoPersonal, brackets, totalRendimientoNetoGeneral);
+  return getIrpfSummary(
+    totalBrutoGeneral,
+    totalIrpf,
+    minimoPersonal,
+    brackets,
+    totalRendimientoNetoGeneral
+  );
 };
 
 export const getRecommendedIrpfPercentageForFuturePayer = (
   pagadores: PayerCalculationInput[],
   pagadorFuturo: FuturePayerCalculationInput,
+  desiredPending = 0,
   minimoPersonal = 5550,
   brackets: IrpfBracket[] = IRPF_BRACKETS
 ): FutureIrpfRecommendation => {
-  const projectedSummary = getIrpfSummaryWithFuturePayer(pagadores, pagadorFuturo, minimoPersonal, brackets);
+  const projectedSummary = getIrpfSummaryWithFuturePayer(
+    pagadores,
+    pagadorFuturo,
+    minimoPersonal,
+    brackets
+  );
   const currentIrpfWithheld = getTotalIrpfAllPayers(pagadores);
 
   const { lastDayOfYear } = getCurrentYearBounds();
@@ -287,7 +454,11 @@ export const getRecommendedIrpfPercentageForFuturePayer = (
   const futureGrossForPeriod = calculateTotalForPeriod(
     pagadorFuturo.startDate,
     lastDayOfYear,
-    Number.isFinite(annualGross) ? annualGross : 0
+    Number.isFinite(annualGross) ? annualGross : 0,
+    pagadorFuturo.payPeriods ?? 12,
+    false,
+    undefined,
+    false
   );
 
   if (futureGrossForPeriod <= 0) {
@@ -299,7 +470,8 @@ export const getRecommendedIrpfPercentageForFuturePayer = (
     };
   }
 
-  const targetFutureWithheld = projectedSummary.cuotaIrpfEstimada - currentIrpfWithheld;
+  const targetFutureWithheld =
+    projectedSummary.cuotaIrpfEstimada - desiredPending - currentIrpfWithheld;
   const rawRecommendedPercentage = (targetFutureWithheld / futureGrossForPeriod) * 100;
   const recommendedPercentage = Math.min(100, Math.max(0, Math.round(rawRecommendedPercentage)));
 

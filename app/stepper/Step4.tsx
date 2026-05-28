@@ -33,7 +33,10 @@ export function Step4({ onBack }: Step4Props) {
 
   return (
     <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300"> {t("step4.title")} </h1>
+      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300">
+        {" "}
+        {t("step4.title")}{" "}
+      </h1>
       <h2 className="text-sm text-start text-gray-500 dark:text-gray-300 mb-8">
         {t("step4.subtitle")}
       </h2>
@@ -119,9 +122,7 @@ export function Step4({ onBack }: Step4Props) {
       </div>
 
       <div className="flex flex-row justify-center items-center bg-gray-100 mt-8 p-4 rounded-lg">
-        <p className="text-sm text-gray-500 dark:text-gray-300">
-          {t("step4.note")}
-        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-300">{t("step4.note")}</p>
       </div>
     </div>
   );

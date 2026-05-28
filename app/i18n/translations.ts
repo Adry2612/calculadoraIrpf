@@ -32,6 +32,29 @@ export const translations = {
         "Unete a miles de profesionales que ya utilizan IRPF Pro para planificar su futuro financiero con precision milimetrica.",
       simulateNow: "Simular ahora",
     },
+    howWeWork: {
+      title: "¿Como trabajamos?",
+      subtitle:
+        "Simplificamos la complejidad del sistema tributario espanol para profesionales con multiples pagadores, calculando retenciones precisas y evitando sorpresas en tu declaracion.",
+      step1Title: "Anade tus pagadores",
+      step1Text:
+        "Introduce tu salario bruto anual y las fechas de contrato de tus empleos actuales o futuros. Nuestro motor maneja solapamientos temporales de forma automatica.",
+      step2Title: "Simulacion de retenciones",
+      step2Text:
+        "Calculamos el tipo impositivo efectivo basado estrictamente en la normativa de 2024. Analizamos como el segundo pagador afecta a tu tramo marginal de IRPF.",
+      step3Title: "Optimizacion y resultados",
+      step3Text:
+        "Recibe un informe detallado con las retenciones sugeridas. Te indicamos cuanto debes ahorrar mensualmente para que Hacienda no te pida dinero a final de ano.",
+      pillar1Title: "Precision tecnica",
+      pillar1Text: "Algoritmos validados por asesores fiscales expertos en pluriempleo.",
+      pillar2Title: "Privacidad total",
+      pillar2Text: "Tus datos no salen de tu navegador. Simulacion 100% privada y anonima.",
+      pillar3Title: "Normativa 2026",
+      pillar3Text: "Actualizado mensualmente con los ultimos boletines oficiales de Hacienda.",
+      ctaTitle: "Listo para empezar?",
+      ctaSubtitle: "Realiza tu primera simulacion en menos de dos minutos.",
+      ctaButton: "Comenzar simulacion",
+    },
     stepper: {
       stepOf: "PASO {step} DE 4",
     },
@@ -52,6 +75,18 @@ export const translations = {
       ascendantsTitle: "Ascendientes a cargo",
       ascendantsSubtitle: "Mayores de 65 anos",
       ascendantsSwitchAria: "Activar o desactivar ascendientes a cargo",
+      retentionModeTitle: "Estrategia de retencion",
+      retentionModeSubtitle:
+        "Selecciona cuanto quieres priorizar una devolucion frente a un ajuste cercano a 0.",
+      retentionSafeRefund: "Devolucion segura",
+      retentionShielded: "Blindado",
+      retentionAdjusted: "Ajustado",
+      retentionSafeRefundInfo:
+        "Aumenta la retencion recomendada para priorizar una devolucion al presentar la renta.",
+      retentionShieldedInfo:
+        "Aplica una retencion intermedia para reducir el riesgo de pagar de golpe sin sobre-retener demasiado.",
+      retentionAdjustedInfo:
+        "Busca una retencion equilibrada para que el resultado final quede lo mas cerca posible de 0.",
       privacyText:
         "Tus datos se procesan localmente y no se almacenan en nuestros servidores. La privacidad de tu informacion financiera es nuestra prioridad absoluta.",
       back: "Volver",
@@ -59,19 +94,31 @@ export const translations = {
     },
     step2: {
       title: "Anadir Empleo",
-      subtitle: "Anade los datos laborales para estimar correctamente tus retenciones y base imponible.",
+      subtitle:
+        "Anade los datos laborales para estimar correctamente tus retenciones y base imponible.",
       companyName: "Nombre de la empresa",
       annualGrossSalary: "Salario Bruto Anual",
       irpfWithholding: "Retencion IRPF (%)",
       employmentPeriod: "Periodo de contratacion",
+      annualPayPeriods: "Pagas anuales",
+      twelvePays: "12 pagas",
+      fourteenPays: "14 pagas",
+      extraPaymentsProratedTitle: "Pagas extra prorrateadas",
+      extraPaymentsProratedSubtitle:
+        "Si esta activado, las pagas extra se reparten en todo el ano y no cuentan como cobros puntuales.",
+      extraPaymentsProratedAria: "Activar o desactivar pagas extra prorrateadas",
+      firstExtraPaymentMonth: "Mes de la primera paga extra",
+      secondExtraPaymentMonth: "Mes de la segunda paga extra",
       startOfYearEnabled: "Inicio de ano activado",
       markStartOfYear: "Marcar inicio de ano",
       expertModeTitle: "Modo experto (situacion especial)",
-      expertModeSubtitle: "Activalo si eres autonomo, funcionario o tienes un regimen de cotizacion distinto.",
+      expertModeSubtitle:
+        "Activalo si eres autonomo, funcionario o tienes un regimen de cotizacion distinto.",
       estimatedSocialSecurity: "Cuota SS estimada (%)",
       estimatedSocialSecurityPlaceholder: "Ej: 6.4 o 0",
       employmentsAdded: "Empleos anadidos: {count}",
       addEmployment: "Anadir empleo",
+      goToEmploymentSummary: "Ir a resumen de empleos",
       back: "Volver",
       next: "Siguiente",
     },
@@ -84,8 +131,7 @@ export const translations = {
       payersDetected: "{count} pagadores detectados",
       back: "Volver",
       calculateResults: "Calcular resultados",
-      note:
-        "Si ves que no coinciden los datos brutos de cada pagador, es porque hemos calculado el bruto obtenido en funcion del periodo y el salario bruto anual proporcionado.",
+      note: "Si ves que no coinciden los datos brutos de cada pagador, es porque hemos calculado el bruto obtenido en funcion del periodo y el salario bruto anual proporcionado.",
     },
     step4: {
       title: "Empleo futuro",
@@ -100,8 +146,7 @@ export const translations = {
       fourteenPays: "14 pagas",
       back: "Volver",
       finish: "Finalizar",
-      note:
-        "Este paso es orientativo y no modifica los pagadores ya registrados, solo sirve para proyectar escenarios futuros.",
+      note: "Este paso es orientativo y no modifica los pagadores ya registrados, solo sirve para proyectar escenarios futuros.",
     },
     summary: {
       headerTag: "Resumen IRPF",
@@ -166,7 +211,8 @@ export const translations = {
       quickReadTitle: "El dato clave esta en el total bruto y lo retenido",
       quickReadText:
         "Si el IRPF retenido supera la cuota estimada, el resultado pendiente sera negativo y reflejara una posible devolucion.",
-      taxBaseCardText: "El calculo usa el minimo personal por defecto de 5.550 EUR y los tramos generales de referencia.",
+      taxBaseCardText:
+        "El calculo usa el minimo personal por defecto de 5.550 EUR y los tramos generales de referencia.",
       backToStepper: "Volver al stepper",
       sessionNotice: "El resumen se obtiene directamente del estado guardado en la sesion actual.",
     },
@@ -211,13 +257,17 @@ export const translations = {
       noRegistration: "Sense registres: entra, introdueix les teves dades i llest.",
       suggestedWithholding: "Retencio suggerida",
       precisionTitle: "Dissenyat per a la precisio",
-      precisionSubtitle: "Eines tecniques per a perfils professionals que gestionen multiples fonts d'ingressos.",
+      precisionSubtitle:
+        "Eines tecniques per a perfils professionals que gestionen multiples fonts d'ingressos.",
       precisionCardTitle: "Precisio",
-      precisionCardText: "Calculs exactes basats en la normativa vigent de 2024 per a tot el territori nacional.",
+      precisionCardText:
+        "Calculs exactes basats en la normativa vigent de 2024 per a tot el territori nacional.",
       multiplePayersCardTitle: "Multiples Pagadors",
-      multiplePayersCardText: "Gestio intel.ligent de pluralitat de pagadors i rendiments addicionals de capital mobiliari.",
+      multiplePayersCardText:
+        "Gestio intel.ligent de pluralitat de pagadors i rendiments addicionals de capital mobiliari.",
       optimizationCardTitle: "Optimitzacio",
-      optimizationCardText: "Recomanacions personalitzades per ajustar les teves retencions mensuals i optimitzar el teu flux de caixa.",
+      optimizationCardText:
+        "Recomanacions personalitzades per ajustar les teves retencions mensuals i optimitzar el teu flux de caixa.",
       realtimeTitle: "Visualitza el teu futur fiscal en temps real",
       realtimeSubtitle:
         "Afegeix els teus pagadors, inclou deduccions per habitatge o fills, i observa com varia instantaniament el teu tipus marginal i efectiu.",
@@ -226,13 +276,38 @@ export const translations = {
       exportTitle: "Exportacio tecnica.",
       exportText: "Genera informes PDF per al teu gestor o empresa.",
       ctaTitle: "Preparat per optimitzar la teva nomina?",
-      ctaSubtitle: "Uneix-te a milers de professionals que ja utilitzen IRPF Pro per planificar el seu futur financer amb precisio mil.limetrica.",
+      ctaSubtitle:
+        "Uneix-te a milers de professionals que ja utilitzen IRPF Pro per planificar el seu futur financer amb precisio mil.limetrica.",
       simulateNow: "Simular ara",
+    },
+    howWeWork: {
+      title: "Com treballem",
+      subtitle:
+        "Simplifiquem la complexitat del sistema tributari espanyol per a professionals amb multiples pagadors, calculant retencions precises i evitant sorpreses a la declaracio.",
+      step1Title: "Afegeix els teus pagadors",
+      step1Text:
+        "Introdueix el teu salari brut anual i les dates de contracte de les teves feines actuals o futures. El nostre motor gestiona solapaments temporals de manera automatica.",
+      step2Title: "Simulacio de retencions",
+      step2Text:
+        "Calculem el tipus impositiu efectiu basat estrictament en la normativa de 2024. Analitzem com el segon pagador afecta el teu tram marginal d'IRPF.",
+      step3Title: "Optimitzacio i resultats",
+      step3Text:
+        "Rep un informe detallat amb les retencions suggerides. T'indiquem quant has d'estalviar cada mes perque Hisenda no et demani diners a final d'any.",
+      pillar1Title: "Precisio tecnica",
+      pillar1Text: "Algorismes validats per assessors fiscals experts en pluriocupacio.",
+      pillar2Title: "Privacitat total",
+      pillar2Text: "Les teves dades no surten del teu navegador. Simulacio 100% privada i anonima.",
+      pillar3Title: "Normativa 2026",
+      pillar3Text: "Actualitzat mensualment amb els ultims butlletins oficials d'Hisenda.",
+      ctaTitle: "Preparat per comencar?",
+      ctaSubtitle: "Fes la teva primera simulacio en menys de dos minuts.",
+      ctaButton: "Comencar simulacio",
     },
     stepper: { stepOf: "PAS {step} DE 4" },
     step1: {
       title: "Dades Personals",
-      subtitle: "La teva situacio personal i familiar determina els teus minims exempts i deduccions autonomiques.",
+      subtitle:
+        "La teva situacio personal i familiar determina els teus minims exempts i deduccions autonomiques.",
       autonomousCommunity: "Comunitat Autonoma",
       civilStatus: "Estat Civil",
       selectPlaceholder: "Seleccionar...",
@@ -246,13 +321,15 @@ export const translations = {
       ascendantsTitle: "Ascendents a carrec",
       ascendantsSubtitle: "Majors de 65 anys",
       ascendantsSwitchAria: "Activar o desactivar ascendents a carrec",
-      privacyText: "Les teves dades es processen localment i no s'emmagatzemen als nostres servidors. La privacitat de la teva informacio financera es la nostra prioritat absoluta.",
+      privacyText:
+        "Les teves dades es processen localment i no s'emmagatzemen als nostres servidors. La privacitat de la teva informacio financera es la nostra prioritat absoluta.",
       back: "Tornar",
       next: "Seguent",
     },
     step2: {
       title: "Afegir Feina",
-      subtitle: "Afegeix les dades laborals per estimar correctament les teves retencions i base imposable.",
+      subtitle:
+        "Afegeix les dades laborals per estimar correctament les teves retencions i base imposable.",
       companyName: "Nom de l'empresa",
       annualGrossSalary: "Salari Brut Anual",
       irpfWithholding: "Retencio IRPF (%)",
@@ -260,7 +337,8 @@ export const translations = {
       startOfYearEnabled: "Inici d'any activat",
       markStartOfYear: "Marcar inici d'any",
       expertModeTitle: "Mode expert (situacio especial)",
-      expertModeSubtitle: "Activa'l si ets autonom, funcionari o tens un regim de cotitzacio diferent.",
+      expertModeSubtitle:
+        "Activa'l si ets autonom, funcionari o tens un regim de cotitzacio diferent.",
       estimatedSocialSecurity: "Quota SS estimada (%)",
       estimatedSocialSecurityPlaceholder: "Ex: 6.4 o 0",
       employmentsAdded: "Feines afegides: {count}",
@@ -270,7 +348,8 @@ export const translations = {
     },
     step3: {
       title: "Verifica els teus pagadors",
-      subtitle: "Hem recopilat les teves principals fonts d'ingressos. Si us plau, confirma els imports anuals bruts o afegeix qualsevol pagador que falti.",
+      subtitle:
+        "Hem recopilat les teves principals fonts d'ingressos. Si us plau, confirma els imports anuals bruts o afegeix qualsevol pagador que falti.",
       addAnotherPayer: "+ Afegir un altre pagador",
       grossTotalTitle: "Total brut entre tots els pagadors",
       payersDetected: "{count} pagadors detectats",
@@ -296,14 +375,16 @@ export const translations = {
     summary: {
       headerTag: "Resum IRPF",
       headerTitle: "Resultat final del teu calcul",
-      headerSubtitle: "Aqui tens el total brut acumulat, l'IRPF ja pagat i l'estimacio fiscal calculada sobre la teva base liquidable.",
+      headerSubtitle:
+        "Aqui tens el total brut acumulat, l'IRPF ja pagat i l'estimacio fiscal calculada sobre la teva base liquidable.",
       totalGross: "Total brut",
       irpfPaid: "IRPF pagat",
       estimatedQuota: "Quota estimada",
       pendingIrpf: "IRPF pendent",
       recommendationTag: "Recomanacio IRPF",
       recommendationTitle: "Per acostar-te a 0 EUR de pendent, aplica aquest percentatge",
-      recommendationText: "Amb la feina futura des de la data d'inici fins a final d'any, la recomanacio aproximada es {percentage}% de retencio.",
+      recommendationText:
+        "Amb la feina futura des de la data d'inici fins a final d'any, la recomanacio aproximada es {percentage}% de retencio.",
       projectedPendingAfterRecommendation: "Pendent projectat despres d'aplicar la recomanacio:",
       futureIrpfSimulator: "Simulador d'IRPF futur (temps real)",
       decreaseIrpfAria: "Reduir IRPF en 1 punt",
@@ -314,10 +395,12 @@ export const translations = {
       annualNetApprox: "Net anual aprox:",
       monthlyNetApprox: "Net mensual aprox ({payPeriods} pagues):",
       recommendedForFutureEmployment: "Percentatge recomanat per a feina futura",
-      recommendationNotice: "Aquesta recomanacio es orientativa i es basa en els trams generals de referencia de l'any fiscal actual.",
+      recommendationNotice:
+        "Aquesta recomanacio es orientativa i es basa en els trams generals de referencia de l'any fiscal actual.",
       breakdownTag: "Desglossament de calculs",
       breakdownTitle: "Pas a pas del resultat",
-      breakdownSubtitle: "Aquest bloc mostra cada component del calcul perque puguis revisar on es desvien les xifres.",
+      breakdownSubtitle:
+        "Aquest bloc mostra cada component del calcul perque puguis revisar on es desvien les xifres.",
       currentPayersDetail: "1) Pagadors actuals (detall)",
       noPayers: "Sense pagadors",
       period: "Periode",
@@ -350,8 +433,10 @@ export const translations = {
       selectorTreasuryResult: "Resultat Hisenda amb selector",
       quickReadTag: "Lectura rapida",
       quickReadTitle: "La dada clau es al total brut i al retingut",
-      quickReadText: "Si l'IRPF retingut supera la quota estimada, el resultat pendent sera negatiu i reflectira una possible devolucio.",
-      taxBaseCardText: "El calcul fa servir el minim personal per defecte de 5.550 EUR i els trams generals de referencia.",
+      quickReadText:
+        "Si l'IRPF retingut supera la quota estimada, el resultat pendent sera negatiu i reflectira una possible devolucio.",
+      taxBaseCardText:
+        "El calcul fa servir el minim personal per defecte de 5.550 EUR i els trams generals de referencia.",
       backToStepper: "Tornar al stepper",
       sessionNotice: "El resum s'obte directament de l'estat desat a la sessio actual.",
     },
@@ -396,27 +481,57 @@ export const translations = {
       noRegistration: "Sen rexistros: entra, introduce os teus datos e listo.",
       suggestedWithholding: "Retencion suxerida",
       precisionTitle: "Deseñado para a precision",
-      precisionSubtitle: "Ferramentas tecnicas para perfis profesionais que xestionan multiples fontes de ingresos.",
+      precisionSubtitle:
+        "Ferramentas tecnicas para perfis profesionais que xestionan multiples fontes de ingresos.",
       precisionCardTitle: "Precision",
-      precisionCardText: "Calculos exactos baseados na normativa vixente de 2024 para todo o territorio nacional.",
+      precisionCardText:
+        "Calculos exactos baseados na normativa vixente de 2024 para todo o territorio nacional.",
       multiplePayersCardTitle: "Multiples Pagadores",
-      multiplePayersCardText: "Xestion intelixente da pluralidade de pagadores e rendementos adicionais de capital mobiliario.",
+      multiplePayersCardText:
+        "Xestion intelixente da pluralidade de pagadores e rendementos adicionais de capital mobiliario.",
       optimizationCardTitle: "Optimizacion",
-      optimizationCardText: "Recomendacions personalizadas para axustar as tuas retencions mensuais e optimizar o teu fluxo de caixa.",
+      optimizationCardText:
+        "Recomendacions personalizadas para axustar as tuas retencions mensuais e optimizar o teu fluxo de caixa.",
       realtimeTitle: "Visualiza o teu futuro fiscal en tempo real",
-      realtimeSubtitle: "Engade os teus pagadores, inclue deduccions por vivenda ou fillos, e observa como varia o teu tipo marxinal e efectivo instantaneamente.",
+      realtimeSubtitle:
+        "Engade os teus pagadores, inclue deduccions por vivenda ou fillos, e observa como varia o teu tipo marxinal e efectivo instantaneamente.",
       multiJurisdictionTitle: "Soporte Multixurisdicion.",
       multiJurisdictionText: "Adaptado a reximes forais e estatais.",
       exportTitle: "Exportacion tecnica.",
       exportText: "Xera informes PDF para o teu xestor ou empresa.",
       ctaTitle: "Listo para optimizar a tua nomina?",
-      ctaSubtitle: "Unete a miles de profesionais que xa utilizan IRPF Pro para planificar o seu futuro financeiro con precision milimetrica.",
+      ctaSubtitle:
+        "Unete a miles de profesionais que xa utilizan IRPF Pro para planificar o seu futuro financeiro con precision milimetrica.",
       simulateNow: "Simular agora",
+    },
+    howWeWork: {
+      title: "Como traballamos",
+      subtitle:
+        "Simplificamos a complexidade do sistema tributario espanol para profesionais con multiples pagadores, calculando retencions precisas e evitando sorpresas na tua declaracion.",
+      step1Title: "Engade os teus pagadores",
+      step1Text:
+        "Introduce o teu salario bruto anual e as datas de contrato dos teus empregos actuais ou futuros. O noso motor manexa solapamentos temporais de forma automatica.",
+      step2Title: "Simulacion de retencions",
+      step2Text:
+        "Calculamos o tipo impositivo efectivo baseado estritamente na normativa de 2024. Analizamos como o segundo pagador afecta ao teu tramo marxinal de IRPF.",
+      step3Title: "Optimizacion e resultados",
+      step3Text:
+        "Recibe un informe detallado coas retencions suxeridas. Indicamos canto debes aforrar cada mes para que Facenda non che pida cartos ao final do ano.",
+      pillar1Title: "Precision tecnica",
+      pillar1Text: "Algoritmos validados por asesores fiscais expertos en pluriemprego.",
+      pillar2Title: "Privacidade total",
+      pillar2Text: "Os teus datos non saen do teu navegador. Simulacion 100% privada e anonima.",
+      pillar3Title: "Normativa 2026",
+      pillar3Text: "Actualizado mensualmente cos ultimos boletins oficiais de Facenda.",
+      ctaTitle: "Listo para comezar?",
+      ctaSubtitle: "Fai a tua primeira simulacion en menos de dous minutos.",
+      ctaButton: "Comezar simulacion",
     },
     stepper: { stepOf: "PASO {step} DE 4" },
     step1: {
       title: "Datos Persoais",
-      subtitle: "A tua situacion persoal e familiar determina os teus minimos exentos e deduccions autonomicas.",
+      subtitle:
+        "A tua situacion persoal e familiar determina os teus minimos exentos e deduccions autonomicas.",
       autonomousCommunity: "Comunidade Autonoma",
       civilStatus: "Estado Civil",
       selectPlaceholder: "Seleccionar...",
@@ -430,13 +545,15 @@ export const translations = {
       ascendantsTitle: "Ascendentes ao cargo",
       ascendantsSubtitle: "Maiores de 65 anos",
       ascendantsSwitchAria: "Activar ou desactivar ascendentes ao cargo",
-      privacyText: "Os teus datos procesanse localmente e non se almacenan nos nosos servidores. A privacidade da tua informacion financeira e a nosa prioridade absoluta.",
+      privacyText:
+        "Os teus datos procesanse localmente e non se almacenan nos nosos servidores. A privacidade da tua informacion financeira e a nosa prioridade absoluta.",
       back: "Volver",
       next: "Seguinte",
     },
     step2: {
       title: "Engadir Emprego",
-      subtitle: "Engade os datos laborais para estimar correctamente as tuas retencions e base impoñible.",
+      subtitle:
+        "Engade os datos laborais para estimar correctamente as tuas retencions e base impoñible.",
       companyName: "Nome da empresa",
       annualGrossSalary: "Salario Bruto Anual",
       irpfWithholding: "Retencion IRPF (%)",
@@ -444,7 +561,8 @@ export const translations = {
       startOfYearEnabled: "Inicio de ano activado",
       markStartOfYear: "Marcar inicio de ano",
       expertModeTitle: "Modo experto (situacion especial)",
-      expertModeSubtitle: "Activao se es autonomo, funcionario ou tes un rexime de cotizacion distinto.",
+      expertModeSubtitle:
+        "Activao se es autonomo, funcionario ou tes un rexime de cotizacion distinto.",
       estimatedSocialSecurity: "Cota SS estimada (%)",
       estimatedSocialSecurityPlaceholder: "Ex: 6.4 ou 0",
       employmentsAdded: "Empregos engadidos: {count}",
@@ -454,7 +572,8 @@ export const translations = {
     },
     step3: {
       title: "Verifica os teus pagadores",
-      subtitle: "Recompilamos as tuas principais fontes de ingresos. Por favor, confirma os importes anuais brutos ou engade calquera pagador que falte.",
+      subtitle:
+        "Recompilamos as tuas principais fontes de ingresos. Por favor, confirma os importes anuais brutos ou engade calquera pagador que falte.",
       addAnotherPayer: "+ Engadir outro pagador",
       grossTotalTitle: "Total bruto entre todos os pagadores",
       payersDetected: "{count} pagadores detectados",
@@ -464,7 +583,8 @@ export const translations = {
     },
     step4: {
       title: "Emprego futuro",
-      subtitle: "Indica unha prevision do teu proximo emprego para estimar o impacto fiscal futuro.",
+      subtitle:
+        "Indica unha prevision do teu proximo emprego para estimar o impacto fiscal futuro.",
       companyOptional: "Empresa (opcional)",
       companyPlaceholder: "Nome da empresa",
       expectedAnnualGross: "Salario bruto anual esperado",
@@ -480,14 +600,16 @@ export const translations = {
     summary: {
       headerTag: "Resumo IRPF",
       headerTitle: "Resultado final do teu calculo",
-      headerSubtitle: "Aqui tes o total bruto acumulado, o IRPF xa pagado e a estimacion fiscal calculada sobre a tua base liquidable.",
+      headerSubtitle:
+        "Aqui tes o total bruto acumulado, o IRPF xa pagado e a estimacion fiscal calculada sobre a tua base liquidable.",
       totalGross: "Total bruto",
       irpfPaid: "IRPF pagado",
       estimatedQuota: "Cota estimada",
       pendingIrpf: "IRPF pendente",
       recommendationTag: "Recomendacion IRPF",
       recommendationTitle: "Para achegarte a 0 EUR de pendente, aplica esta porcentaxe",
-      recommendationText: "Co emprego futuro desde a data de inicio ata final de ano, a recomendacion aproximada e {percentage}% de retencion.",
+      recommendationText:
+        "Co emprego futuro desde a data de inicio ata final de ano, a recomendacion aproximada e {percentage}% de retencion.",
       projectedPendingAfterRecommendation: "Pendente proxectado tras aplicar a recomendacion:",
       futureIrpfSimulator: "Simulador de IRPF futuro (tempo real)",
       decreaseIrpfAria: "Reducir IRPF en 1 punto",
@@ -498,10 +620,12 @@ export const translations = {
       annualNetApprox: "Neto anual aprox:",
       monthlyNetApprox: "Neto mensual aprox ({payPeriods} pagas):",
       recommendedForFutureEmployment: "Porcentaxe recomendada para emprego futuro",
-      recommendationNotice: "Esta recomendacion e orientativa e basease nos tramos xerais de referencia do ano fiscal actual.",
+      recommendationNotice:
+        "Esta recomendacion e orientativa e basease nos tramos xerais de referencia do ano fiscal actual.",
       breakdownTag: "Desglose de calculos",
       breakdownTitle: "Paso a paso do resultado",
-      breakdownSubtitle: "Este bloque mostra cada compoñente do calculo para que poidas revisar onde se desvían as cifras.",
+      breakdownSubtitle:
+        "Este bloque mostra cada compoñente do calculo para que poidas revisar onde se desvían as cifras.",
       currentPayersDetail: "1) Pagadores actuais (detalle)",
       noPayers: "Sen pagadores",
       period: "Periodo",
@@ -534,8 +658,10 @@ export const translations = {
       selectorTreasuryResult: "Resultado Facenda con selector",
       quickReadTag: "Lectura rapida",
       quickReadTitle: "O dato clave esta no total bruto e no retido",
-      quickReadText: "Se o IRPF retido supera a cota estimada, o resultado pendente sera negativo e reflectira unha posible devolucion.",
-      taxBaseCardText: "O calculo usa o minimo persoal por defecto de 5.550 EUR e os tramos xerais de referencia.",
+      quickReadText:
+        "Se o IRPF retido supera a cota estimada, o resultado pendente sera negativo e reflectira unha posible devolucion.",
+      taxBaseCardText:
+        "O calculo usa o minimo persoal por defecto de 5.550 EUR e os tramos xerais de referencia.",
       backToStepper: "Volver ao stepper",
       sessionNotice: "O resumo obtense directamente do estado gardado na sesion actual.",
     },
@@ -573,33 +699,62 @@ export const translations = {
   eu: {
     home: {
       heroTitle: "Hartu zure IRPFaren kontrola hainbat ordaintzailerekin",
-      heroSubtitle: "Tresna ezin hobea zure nomina simulatzeko, errenta aitorpenean ezustekoak saihesteko eta Espainian atxikipenak optimizatzeko.",
+      heroSubtitle:
+        "Tresna ezin hobea zure nomina simulatzeko, errenta aitorpenean ezustekoak saihesteko eta Espainian atxikipenak optimizatzeko.",
       startSimulation: "Simulazioa hasi",
       seeHowItWorks: "Nola funtzionatzen duen ikusi",
       noRegistration: "Erregistrorik gabe: sartu, idatzi zure datuak eta kitto.",
       suggestedWithholding: "Iradokitako atxikipena",
       precisionTitle: "Zehaztasunerako diseinatua",
-      precisionSubtitle: "Diru sarrera iturri anitz kudeatzen dituzten profil profesionalentzako tresna teknikoak.",
+      precisionSubtitle:
+        "Diru sarrera iturri anitz kudeatzen dituzten profil profesionalentzako tresna teknikoak.",
       precisionCardTitle: "Zehaztasuna",
       precisionCardText: "2024ko indarreko araudian oinarritutako kalkulu zehatzak estatu osorako.",
       multiplePayersCardTitle: "Hainbat Ordaintzaile",
-      multiplePayersCardText: "Ordaintzaile anitzen eta kapital higigarriaren etekin gehigarrien kudeaketa adimenduna.",
+      multiplePayersCardText:
+        "Ordaintzaile anitzen eta kapital higigarriaren etekin gehigarrien kudeaketa adimenduna.",
       optimizationCardTitle: "Optimizazioa",
       optimizationCardText: "Zure hileko atxikipenak doitzen laguntzeko gomendio pertsonalizatuak.",
       realtimeTitle: "Ikusi zure etorkizun fiskala denbora errealean",
-      realtimeSubtitle: "Gehitu zure ordaintzaileak, etxebizitza edo seme-alabengatiko kenketak eta ikusi zure tasa marjinala nola aldatzen den unean bertan.",
+      realtimeSubtitle:
+        "Gehitu zure ordaintzaileak, etxebizitza edo seme-alabengatiko kenketak eta ikusi zure tasa marjinala nola aldatzen den unean bertan.",
       multiJurisdictionTitle: "Jurisdikzio anitzeko euskarria.",
       multiJurisdictionText: "Foru eta estatuko erregimenetara egokitua.",
       exportTitle: "Esportazio teknikoa.",
       exportText: "Sortu PDF txostenak zure aholkulariarentzat edo enpresarentzat.",
       ctaTitle: "Prest zure nomina optimizatzeko?",
-      ctaSubtitle: "Bat egin IRPF Pro erabiltzen duten milaka profesionalekin eta planifikatu zure etorkizun finantzarioa zehaztasunez.",
+      ctaSubtitle:
+        "Bat egin IRPF Pro erabiltzen duten milaka profesionalekin eta planifikatu zure etorkizun finantzarioa zehaztasunez.",
       simulateNow: "Simulatu orain",
+    },
+    howWeWork: {
+      title: "Nola egiten dugu lan",
+      subtitle:
+        "Espainiako zerga sistemaren konplexutasuna sinplifikatzen dugu ordaintzaile anitz dituzten profesionalentzat, atxikipen zehatzak kalkulatuz eta ezustekoak saihestuz.",
+      step1Title: "Gehitu zure ordaintzaileak",
+      step1Text:
+        "Sartu zure urteko soldata gordina eta egungo edo etorkizuneko lanen kontratu datak. Gure motorrak denbora gainjartzeak automatikoki kudeatzen ditu.",
+      step2Title: "Atxikipenen simulazioa",
+      step2Text:
+        "2024ko araudian zorrotz oinarritutako tasa eraginkorra kalkulatzen dugu. Bigarren ordaintzaileak zure IRPF tarte marjinalean duen eragina aztertzen dugu.",
+      step3Title: "Optimizazioa eta emaitzak",
+      step3Text:
+        "Iradokitako atxikipenekin txosten xehatua jasoko duzu. Hilean zenbat aurreztu behar duzun adierazten dugu urte amaieran Ogasunak ez eskatzeko.",
+      pillar1Title: "Zehaztasun teknikoa",
+      pillar1Text: "Pluri-enpleguan adituak diren zerga aholkulariek balioztatutako algoritmoak.",
+      pillar2Title: "Pribatutasun osoa",
+      pillar2Text: "Zure datuak ez dira zure nabigatzailetik ateratzen. Simulazio %100 pribatua.",
+      pillar3Title: "2026ko araudia",
+      pillar3Text: "Hilero eguneratua Ogasunaren azken buletin ofizialekin.",
+      ctaTitle: "Prest hasteko?",
+      ctaSubtitle: "Egin zure lehen simulazioa bi minutu baino gutxiagoan.",
+      ctaButton: "Simulazioa hasi",
     },
     stepper: { stepOf: "{step}. PAUSOA 4TIK" },
     step1: {
       title: "Datu Pertsonalak",
-      subtitle: "Zure egoera pertsonalak eta familiarrak zehazten ditu gutxieneko salbuetsiak eta autonomia erkidegoko kenkariak.",
+      subtitle:
+        "Zure egoera pertsonalak eta familiarrak zehazten ditu gutxieneko salbuetsiak eta autonomia erkidegoko kenkariak.",
       autonomousCommunity: "Autonomia Erkidegoa",
       civilStatus: "Egoera Zibila",
       selectPlaceholder: "Hautatu...",
@@ -613,7 +768,8 @@ export const translations = {
       ascendantsTitle: "Ardurapeko aurrekoak",
       ascendantsSubtitle: "65 urtetik gorakoak",
       ascendantsSwitchAria: "Ardurapeko aurrekoak aktibatu edo desaktibatu",
-      privacyText: "Zure datuak lokalki prozesatzen dira eta ez dira gure zerbitzarietan gordetzen. Zure finantza informazioaren pribatutasuna da gure lehentasun nagusia.",
+      privacyText:
+        "Zure datuak lokalki prozesatzen dira eta ez dira gure zerbitzarietan gordetzen. Zure finantza informazioaren pribatutasuna da gure lehentasun nagusia.",
       back: "Atzera",
       next: "Hurrengoa",
     },
@@ -627,7 +783,8 @@ export const translations = {
       startOfYearEnabled: "Urte hasiera aktibatuta",
       markStartOfYear: "Markatu urte hasiera",
       expertModeTitle: "Aditu modua (egoera berezia)",
-      expertModeSubtitle: "Aktibatu autonomoa, funtzionarioa edo kotizazio erregimen berezia baduzu.",
+      expertModeSubtitle:
+        "Aktibatu autonomoa, funtzionarioa edo kotizazio erregimen berezia baduzu.",
       estimatedSocialSecurity: "Gizarte Seg. kuota estimatua (%)",
       estimatedSocialSecurityPlaceholder: "Adib: 6.4 edo 0",
       employmentsAdded: "Gehitutako enpleguak: {count}",
@@ -637,7 +794,8 @@ export const translations = {
     },
     step3: {
       title: "Egiaztatu zure ordaintzaileak",
-      subtitle: "Zure diru sarrera iturri nagusiak bildu ditugu. Mesedez, baieztatu urteko zenbateko gordinak edo gehitu falta den ordaintzailerik badago.",
+      subtitle:
+        "Zure diru sarrera iturri nagusiak bildu ditugu. Mesedez, baieztatu urteko zenbateko gordinak edo gehitu falta den ordaintzailerik badago.",
       addAnotherPayer: "+ Beste ordaintzaile bat gehitu",
       grossTotalTitle: "Ordaintzaile guztien arteko gordina",
       payersDetected: "{count} ordaintzaile detektatu dira",
@@ -647,7 +805,8 @@ export const translations = {
     },
     step4: {
       title: "Etorkizuneko enplegua",
-      subtitle: "Adierazi zure hurrengo enpleguaren aurreikuspena etorkizuneko zerga eragina estimatzeko.",
+      subtitle:
+        "Adierazi zure hurrengo enpleguaren aurreikuspena etorkizuneko zerga eragina estimatzeko.",
       companyOptional: "Enpresa (aukerakoa)",
       companyPlaceholder: "Enpresaren izena",
       expectedAnnualGross: "Espero den urteko soldata gordina",
@@ -663,14 +822,16 @@ export const translations = {
     summary: {
       headerTag: "IRPF laburpena",
       headerTitle: "Zure kalkuluaren azken emaitza",
-      headerSubtitle: "Hemen duzu metatutako gordina, dagoeneko ordaindutako IRPFa eta zure oinarri likidagarriaren gaineko estimazio fiskala.",
+      headerSubtitle:
+        "Hemen duzu metatutako gordina, dagoeneko ordaindutako IRPFa eta zure oinarri likidagarriaren gaineko estimazio fiskala.",
       totalGross: "Guztizko gordina",
       irpfPaid: "Ordaindutako IRPFa",
       estimatedQuota: "Estimazio kuota",
       pendingIrpf: "Zain dagoen IRPFa",
       recommendationTag: "IRPF gomendioa",
       recommendationTitle: "0 EUR inguruko zainketa lortzeko, aplikatu ehuneko hau",
-      recommendationText: "Etorkizuneko enpleguarekin hasiera datatik urte amaierara, gutxi gorabeherako gomendioa {percentage}% da.",
+      recommendationText:
+        "Etorkizuneko enpleguarekin hasiera datatik urte amaierara, gutxi gorabeherako gomendioa {percentage}% da.",
       projectedPendingAfterRecommendation: "Gomendioa aplikatu ondorengo proiektatutako zainketa:",
       futureIrpfSimulator: "Etorkizuneko IRPF simulatzailea (denbora errealean)",
       decreaseIrpfAria: "IRPFa puntu 1 jaitsi",
@@ -681,10 +842,12 @@ export const translations = {
       annualNetApprox: "Urteko garbia gutxi gorabehera:",
       monthlyNetApprox: "Hileko garbia gutxi gorabehera ({payPeriods} ordainsari):",
       recommendedForFutureEmployment: "Etorkizuneko enplegurako gomendatutako ehunekoa",
-      recommendationNotice: "Gomendio hau orientagarria da eta uneko zerga urteko tarte orokorretan oinarritzen da.",
+      recommendationNotice:
+        "Gomendio hau orientagarria da eta uneko zerga urteko tarte orokorretan oinarritzen da.",
       breakdownTag: "Kalkuluen xehapena",
       breakdownTitle: "Emaitzaren pausoz pauso",
-      breakdownSubtitle: "Bloke honek kalkuluaren osagai bakoitza erakusten du, zenbakiak non desbideratzen diren berrikusi ahal izateko.",
+      breakdownSubtitle:
+        "Bloke honek kalkuluaren osagai bakoitza erakusten du, zenbakiak non desbideratzen diren berrikusi ahal izateko.",
       currentPayersDetail: "1) Egungo ordaintzaileak (xehetasuna)",
       noPayers: "Ordaintzailerik ez",
       period: "Aldia",
@@ -717,8 +880,10 @@ export const translations = {
       selectorTreasuryResult: "Hautatzailearekin Ogasun emaitza",
       quickReadTag: "Irakurketa azkarra",
       quickReadTitle: "Datu gakoa guztizko gordinan eta atxikitakoan dago",
-      quickReadText: "Atxikitako IRPFa estimatutako kuota baino handiagoa bada, zain dagoen emaitza negatiboa izango da eta itzulketa posible bat adieraziko du.",
-      taxBaseCardText: "Kalkuluak 5.550 EUR-ko gutxieneko pertsonala eta erreferentziazko tarte orokorrak erabiltzen ditu.",
+      quickReadText:
+        "Atxikitako IRPFa estimatutako kuota baino handiagoa bada, zain dagoen emaitza negatiboa izango da eta itzulketa posible bat adieraziko du.",
+      taxBaseCardText:
+        "Kalkuluak 5.550 EUR-ko gutxieneko pertsonala eta erreferentziazko tarte orokorrak erabiltzen ditu.",
       backToStepper: "Stepperrera itzuli",
       sessionNotice: "Laburpena uneko saioan gordetako egoeratik zuzenean lortzen da.",
     },
@@ -756,33 +921,64 @@ export const translations = {
   oc: {
     home: {
       heroTitle: "Pren eth contrarotle deth teu IRPF damb multiples pagadors",
-      heroSubtitle: "Era airina definitiva enta simular era tua nomina, evitar sorpreses ena declaracion dera renda e optimizar es teues retencions en Estat.",
+      heroSubtitle:
+        "Era airina definitiva enta simular era tua nomina, evitar sorpreses ena declaracion dera renda e optimizar es teues retencions en Estat.",
       startSimulation: "Començar simulacion",
       seeHowItWorks: "Véder com foncione",
       noRegistration: "Sense registres: entre, introdusís es tòns donades e prèst.",
       suggestedWithholding: "Retencion suggerida",
       precisionTitle: "Dessenhat entara precision",
-      precisionSubtitle: "Airines tecniques entà perfils professionals que gestionen multiples hònts d'ingrèssi.",
+      precisionSubtitle:
+        "Airines tecniques entà perfils professionals que gestionen multiples hònts d'ingrèssi.",
       precisionCardTitle: "Precision",
-      precisionCardText: "Calculs exactes basadi ena normativa vigenta de 2024 entà tot eth territòri.",
+      precisionCardText:
+        "Calculs exactes basadi ena normativa vigenta de 2024 entà tot eth territòri.",
       multiplePayersCardTitle: "Multiples Pagadors",
-      multiplePayersCardText: "Gestion intelligenta dera pluralitat de pagadors e rendiments addicionaus de capitau mobiliari.",
+      multiplePayersCardText:
+        "Gestion intelligenta dera pluralitat de pagadors e rendiments addicionaus de capitau mobiliari.",
       optimizationCardTitle: "Optimizacion",
-      optimizationCardText: "Recomanacions personalizades entà ajustar es teues retencions mesadères.",
+      optimizationCardText:
+        "Recomanacions personalizades entà ajustar es teues retencions mesadères.",
       realtimeTitle: "Visualize eth tò futur fiscau en temps reau",
-      realtimeSubtitle: "Ajuste es tòns pagadors, includís deduccions e observe coma varie eth tipe marginaus e efectiu.",
+      realtimeSubtitle:
+        "Ajuste es tòns pagadors, includís deduccions e observe coma varie eth tipe marginaus e efectiu.",
       multiJurisdictionTitle: "Sosten multijurisdiccion.",
       multiJurisdictionText: "Adaptat a regimes foraus e estataus.",
       exportTitle: "Exportacion tecnica.",
       exportText: "Genère informes PDF entath gestor o era empresa.",
       ctaTitle: "Prèst entà optimizar era tua nomina?",
-      ctaSubtitle: "Junte-te a milèrs de professionaus que ja utilizan IRPF Pro entà planificar eth sòn futur financer.",
+      ctaSubtitle:
+        "Junte-te a milèrs de professionaus que ja utilizan IRPF Pro entà planificar eth sòn futur financer.",
       simulateNow: "Simular ara",
+    },
+    howWeWork: {
+      title: "Coma trabalham",
+      subtitle:
+        "Simplificam era complexitat deth sistèma tributari entà professionaus damb multiples pagadors, calculant retencions precises e evitant sorpreses ena declaracion.",
+      step1Title: "Ajuste es tòns pagadors",
+      step1Text:
+        "Introdusís eth salari brut annau e es dates de contracte des emplecs actuaus o futuri. Eth motor gestione es solapaments temporals de forma automatica.",
+      step2Title: "Simulacion de retencions",
+      step2Text:
+        "Calculam eth tipe impositiu efectiu basat estrictament ena normativa de 2024. Analizam com eth dusau pagador afècte eth tram marginaus d'IRPF.",
+      step3Title: "Optimizacion e resultats",
+      step3Text:
+        "Recebís un informe detalhat damb es retencions suggerides. T'indicam quant as d'estauviar cada mes entà evitar pagaments inesperadi a fin d'an.",
+      pillar1Title: "Precision tecnica",
+      pillar1Text: "Algoritmes validats per assessors fiscaus expèrts en pluriemplec.",
+      pillar2Title: "Privacitat totau",
+      pillar2Text: "Es tòns donades non gessen deth navegador. Simulacion 100% privada e anonima.",
+      pillar3Title: "Normativa 2026",
+      pillar3Text: "Actualizat cada mes damb es darrèrs boletins oficiaus d'Hasienda.",
+      ctaTitle: "Prèst entà començar?",
+      ctaSubtitle: "Hès era prumèra simulacion en mens de dus menutes.",
+      ctaButton: "Començar simulacion",
     },
     stepper: { stepOf: "PAS {step} DE 4" },
     step1: {
       title: "Donades Personaus",
-      subtitle: "Era tua situacion personau e familhara determine es tòns minims exempti e deduccions autonomiques.",
+      subtitle:
+        "Era tua situacion personau e familhara determine es tòns minims exempti e deduccions autonomiques.",
       autonomousCommunity: "Comunautat Autonòma",
       civilStatus: "Estat Civiu",
       selectPlaceholder: "Seleccionar...",
@@ -796,13 +992,15 @@ export const translations = {
       ascendantsTitle: "Ascendents a cargue",
       ascendantsSubtitle: "Mès de 65 ans",
       ascendantsSwitchAria: "Activar o desactivar ascendents a cargue",
-      privacyText: "Es tòns donades se processen en locau e non s'emmagazemen en servidors. Era privacitat dera tua informacion financièra ei prioritat absoluta.",
+      privacyText:
+        "Es tòns donades se processen en locau e non s'emmagazemen en servidors. Era privacitat dera tua informacion financièra ei prioritat absoluta.",
       back: "Tornar",
       next: "Seguent",
     },
     step2: {
       title: "Ahijar Emplec",
-      subtitle: "Ahij es donades laboraus entà estimar corrèctament es tòes retencions e base imposabla.",
+      subtitle:
+        "Ahij es donades laboraus entà estimar corrèctament es tòes retencions e base imposabla.",
       companyName: "Nòm dera empresa",
       annualGrossSalary: "Salari brut annau",
       irpfWithholding: "Retencion IRPF (%)",
@@ -810,7 +1008,8 @@ export const translations = {
       startOfYearEnabled: "Inici d'an activat",
       markStartOfYear: "Marcar inici d'an",
       expertModeTitle: "Mòde expèrt (situacion especiau)",
-      expertModeSubtitle: "Activa'c se ès autonòm, foncionari o as un regim de cotizacion diferent.",
+      expertModeSubtitle:
+        "Activa'c se ès autonòm, foncionari o as un regim de cotizacion diferent.",
       estimatedSocialSecurity: "Còta SS estimada (%)",
       estimatedSocialSecurityPlaceholder: "Ex: 6.4 o 0",
       employmentsAdded: "Emplecs ahijuts: {count}",
@@ -820,7 +1019,8 @@ export const translations = {
     },
     step3: {
       title: "Verifique es tòns pagadors",
-      subtitle: "Auem recopilat es tòes hònts principaus d'ingrèssi. Confirme es montants annau bruts o ahij quinsevolh pagador que manque.",
+      subtitle:
+        "Auem recopilat es tòes hònts principaus d'ingrèssi. Confirme es montants annau bruts o ahij quinsevolh pagador que manque.",
       addAnotherPayer: "+ Ahijar un aute pagador",
       grossTotalTitle: "Totau brut entre toti es pagadors",
       payersDetected: "{count} pagadors detectadi",
@@ -846,14 +1046,16 @@ export const translations = {
     summary: {
       headerTag: "Resum IRPF",
       headerTitle: "Resultat finau deth calcul",
-      headerSubtitle: "Ací as eth totau brut acumulat, er IRPF ja pagat e era estimacion fiscau sus era base liquidabla.",
+      headerSubtitle:
+        "Ací as eth totau brut acumulat, er IRPF ja pagat e era estimacion fiscau sus era base liquidabla.",
       totalGross: "Totau brut",
       irpfPaid: "IRPF pagat",
       estimatedQuota: "Còta estimada",
       pendingIrpf: "IRPF pendent",
       recommendationTag: "Recomanacion IRPF",
       recommendationTitle: "Entà apropar-te a 0 EUR de pendent, aplique aguest percentatge",
-      recommendationText: "Damb er emplec futur des dera data d'inici enquiara fin d'an, era recomanacion aproximada ei {percentage}% de retencion.",
+      recommendationText:
+        "Damb er emplec futur des dera data d'inici enquiara fin d'an, era recomanacion aproximada ei {percentage}% de retencion.",
       projectedPendingAfterRecommendation: "Pendent projectat dempús d'aplicar era recomanacion:",
       futureIrpfSimulator: "Simulador d'IRPF futur (temps reau)",
       decreaseIrpfAria: "Redusir IRPF en 1 punt",
@@ -864,10 +1066,12 @@ export const translations = {
       annualNetApprox: "Net annau aprox:",
       monthlyNetApprox: "Net mesadèr aprox ({payPeriods} pagues):",
       recommendedForFutureEmployment: "Percentatge recomandat entar emplec futur",
-      recommendationNotice: "Aguesta recomanacion ei orientativa e se base ena referéncia generau der an fiscau actuau.",
+      recommendationNotice:
+        "Aguesta recomanacion ei orientativa e se base ena referéncia generau der an fiscau actuau.",
       breakdownTag: "Desglose de calculs",
       breakdownTitle: "Pas a pas deth resultat",
-      breakdownSubtitle: "Aguest blòc mòstre cada component deth calcul entà revisar a on se desvien es chifres.",
+      breakdownSubtitle:
+        "Aguest blòc mòstre cada component deth calcul entà revisar a on se desvien es chifres.",
       currentPayersDetail: "1) Pagadors actuaus (detaIlh)",
       noPayers: "Sense pagadors",
       period: "Periòde",
@@ -900,8 +1104,10 @@ export const translations = {
       selectorTreasuryResult: "Resultat Hasienda damb selector",
       quickReadTag: "Lectura rapida",
       quickReadTitle: "Era dada clau ei en totau brut e en retengut",
-      quickReadText: "Se er IRPF retengut supère era còta estimada, eth resultat pendent serà negatiu e poderà indicar devolucion.",
-      taxBaseCardText: "Eth calcul emplegue eth minim personau per defecte de 5.550 EUR e es trams generaus de referéncia.",
+      quickReadText:
+        "Se er IRPF retengut supère era còta estimada, eth resultat pendent serà negatiu e poderà indicar devolucion.",
+      taxBaseCardText:
+        "Eth calcul emplegue eth minim personau per defecte de 5.550 EUR e es trams generaus de referéncia.",
       backToStepper: "Tornar ath stepper",
       sessionNotice: "Eth resum s'obten dirèctament der estat gardat ena session actuau.",
     },

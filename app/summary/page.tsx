@@ -10,6 +10,7 @@ import {
   calculateSocialSecurityForPeriod,
   calculateTotalForPeriod,
   calculateTotalIrpfWithheld,
+  getExtraPaymentCountForPeriod,
   getIrpfSummary,
   getNetWorkIncomeForPeriod,
   getRecommendedIrpfPercentageForFuturePayer,
@@ -50,6 +51,9 @@ export default function SummaryPage() {
   const { localeTag, t } = useI18n();
   const pagadores = useCalculadoraStore((state) => state.pagadores);
   const pagadorFuturo = useCalculadoraStore((state) => state.pagadorFuturo);
+  const retentionPreference = useCalculadoraStore(
+    (state) => state.datosPersonales.retentionPreference
+  );
   const currentYear = new Date().getFullYear();
   const daysInCurrentYear =
     (currentYear % 4 === 0 && currentYear % 100 !== 0) || currentYear % 400 === 0 ? 366 : 365;
@@ -99,7 +103,9 @@ export default function SummaryPage() {
       }
 
       const millisecondsPerDay = 1000 * 60 * 60 * 24;
-      return Math.floor((normalizedEnd.getTime() - normalizedStart.getTime()) / millisecondsPerDay) + 1;
+      return (
+        Math.floor((normalizedEnd.getTime() - normalizedStart.getTime()) / millisecondsPerDay) + 1
+      );
     },
     [currentYear]
   );
@@ -108,25 +114,57 @@ export default function SummaryPage() {
     () =>
       pagadores.map((pagador, index) => {
         const daysWorked = getDaysWorked(pagador.startDate, pagador.endDate);
-        const grossDaily = pagador.grossSalary / daysInCurrentYear;
-        const brutoPeriodo = calculateTotalForPeriod(pagador.startDate, pagador.endDate, pagador.grossSalary);
+        const payPeriods = pagador.payPeriods ?? 12;
+        const extraPaymentsProrated = pagador.extraPaymentsProrated ?? false;
+        const extraPaymentMonths = pagador.extraPaymentMonths ?? [6, 12];
+        const annualBaseGross =
+          payPeriods === 14 && !extraPaymentsProrated
+            ? pagador.grossSalary * (12 / 14)
+            : pagador.grossSalary;
+        const grossDaily = annualBaseGross / daysInCurrentYear;
+        const extraPaymentCount = getExtraPaymentCountForPeriod(
+          pagador.startDate,
+          pagador.endDate,
+          payPeriods,
+          extraPaymentsProrated,
+          extraPaymentMonths,
+          true
+        );
+        const brutoPeriodo = calculateTotalForPeriod(
+          pagador.startDate,
+          pagador.endDate,
+          pagador.grossSalary,
+          payPeriods,
+          extraPaymentsProrated,
+          extraPaymentMonths,
+          true
+        );
         const retenidoPeriodo = calculateTotalIrpfWithheld(
           pagador.startDate,
           pagador.endDate,
           pagador.grossSalary,
-          pagador.irpfPercentage
+          pagador.irpfPercentage,
+          payPeriods,
+          extraPaymentsProrated,
+          extraPaymentMonths,
+          true
         );
         const socialSecurityPeriodo = calculateSocialSecurityForPeriod(
           pagador.startDate,
           pagador.endDate,
           pagador.grossSalary,
+          payPeriods,
+          extraPaymentsProrated,
+          extraPaymentMonths,
+          true,
           pagador.salaryIncludesSocialSecurity,
           pagador.socialSecurityPercentage
         );
         const otherDeductionsPeriodo = calculateOtherDeductionsForPeriod(
           pagador.startDate,
           pagador.endDate,
-          pagador.annualOtherDeductions ?? 0
+          pagador.annualOtherDeductions ?? 0,
+          true
         );
         const rendimientoNetoPeriodo = getNetWorkIncomeForPeriod(pagador);
 
@@ -144,7 +182,12 @@ export default function SummaryPage() {
           otherDeductionsPeriodo,
           rendimientoNetoPeriodo,
           irpfPercentage: pagador.irpfPercentage,
-          socialSecurityPercentage: pagador.socialSecurityPercentage ?? DEFAULT_SOCIAL_SECURITY_PERCENTAGE,
+          socialSecurityPercentage:
+            pagador.socialSecurityPercentage ?? DEFAULT_SOCIAL_SECURITY_PERCENTAGE,
+          payPeriods,
+          extraPaymentsProrated,
+          extraPaymentMonths,
+          extraPaymentCount,
         };
       }),
     [pagadores, daysInCurrentYear, getDaysWorked, t]
@@ -162,21 +205,29 @@ export default function SummaryPage() {
       return null;
     }
 
+    const targetPendingByPreference: Record<"devolucion-segura" | "blindado" | "ajustado", number> = {
+      "devolucion-segura": -1000,
+      blindado: -400,
+      ajustado: 0,
+    };
+
     const result = getRecommendedIrpfPercentageForFuturePayer(pagadores, {
       name: pagadorFuturo.name,
       startDate: pagadorFuturo.startDate,
       annualGross: pagadorFuturo.grossSalary,
-    });
+      payPeriods: pagadorFuturo.payPeriods,
+    }, targetPendingByPreference[retentionPreference]);
 
     if (result.futureGrossForPeriod <= 0) {
       return null;
     }
 
     return result;
-  }, [pagadores, pagadorFuturo]);
+  }, [pagadores, pagadorFuturo, retentionPreference]);
 
   const [selectedFutureIrpfOverride, setSelectedFutureIrpfOverride] = useState<number | null>(null);
-  const selectedFutureIrpf = selectedFutureIrpfOverride ?? recommendation?.recommendedPercentage ?? 0;
+  const selectedFutureIrpf =
+    selectedFutureIrpfOverride ?? recommendation?.recommendedPercentage ?? 0;
 
   const recommendationBreakdown = useMemo(() => {
     if (!recommendation) {
@@ -190,18 +241,26 @@ export default function SummaryPage() {
     );
 
     const futureWithheldWithRecommendation = Number(
-      (recommendation.futureGrossForPeriod * (recommendation.recommendedPercentage / 100)).toFixed(2)
+      (recommendation.futureGrossForPeriod * (recommendation.recommendedPercentage / 100)).toFixed(
+        2
+      )
     );
 
     const annualWithheldWithRecommendation = Number(
       (futureAnnualGross * (recommendation.recommendedPercentage / 100)).toFixed(2)
     );
     const annualNetApprox = Number(
-      (futureAnnualGross - annualSocialSecurityEstimated - annualWithheldWithRecommendation).toFixed(2)
+      (
+        futureAnnualGross -
+        annualSocialSecurityEstimated -
+        annualWithheldWithRecommendation
+      ).toFixed(2)
     );
     const monthlyNetApprox = Number((annualNetApprox / payPeriods).toFixed(2));
 
-    const totalWithheldProjected = Number((summary.irpfRetenido + futureWithheldWithRecommendation).toFixed(2));
+    const totalWithheldProjected = Number(
+      (summary.irpfRetenido + futureWithheldWithRecommendation).toFixed(2)
+    );
     const pendingWithRecommendation = Number(
       (recommendation.projectedSummary.cuotaIrpfEstimada - totalWithheldProjected).toFixed(2)
     );
@@ -227,16 +286,24 @@ export default function SummaryPage() {
     const futureWithheldSelected = Number(
       (recommendation.futureGrossForPeriod * (selectedFutureIrpf / 100)).toFixed(2)
     );
-    const totalWithheldSelected = Number((summary.irpfRetenido + futureWithheldSelected).toFixed(2));
-    const haciendaResult = Number((totalWithheldSelected - recommendation.projectedSummary.cuotaIrpfEstimada).toFixed(2));
+    const totalWithheldSelected = Number(
+      (summary.irpfRetenido + futureWithheldSelected).toFixed(2)
+    );
+    const haciendaResult = Number(
+      (totalWithheldSelected - recommendation.projectedSummary.cuotaIrpfEstimada).toFixed(2)
+    );
 
     const futureAnnualGross = Number(pagadorFuturo.grossSalary) || 0;
     const payPeriods = pagadorFuturo.payPeriods ?? 12;
     const annualSocialSecurityEstimated = Number(
       (futureAnnualGross * (DEFAULT_SOCIAL_SECURITY_PERCENTAGE / 100)).toFixed(2)
     );
-    const annualWithheldSelected = Number((futureAnnualGross * (selectedFutureIrpf / 100)).toFixed(2));
-    const annualNetSelected = Number((futureAnnualGross - annualSocialSecurityEstimated - annualWithheldSelected).toFixed(2));
+    const annualWithheldSelected = Number(
+      (futureAnnualGross * (selectedFutureIrpf / 100)).toFixed(2)
+    );
+    const annualNetSelected = Number(
+      (futureAnnualGross - annualSocialSecurityEstimated - annualWithheldSelected).toFixed(2)
+    );
     const monthlyNetSelected = Number((annualNetSelected / payPeriods).toFixed(2));
 
     return {
@@ -248,36 +315,62 @@ export default function SummaryPage() {
       monthlyNetSelected,
       payPeriods,
     };
-  }, [pagadorFuturo.grossSalary, pagadorFuturo.payPeriods, recommendation, selectedFutureIrpf, summary.irpfRetenido]);
+  }, [
+    pagadorFuturo.grossSalary,
+    pagadorFuturo.payPeriods,
+    recommendation,
+    selectedFutureIrpf,
+    summary.irpfRetenido,
+  ]);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f5f5f5,#e7e5e4_45%,#d6d3d1_100%)] px-6 py-10 text-gray-900 sm:px-10">
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <section className="overflow-hidden rounded-4xl border border-gray-200 bg-white/85 p-8 shadow-2xl shadow-gray-300/40 backdrop-blur">
           <div className="flex flex-col gap-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500">{t("summary.headerTag")}</p>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{t("summary.headerTitle")}</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500">
+              {t("summary.headerTag")}
+            </p>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+              {t("summary.headerTitle")}
+            </h1>
             <p className="max-w-2xl text-base leading-7 text-gray-600">
               {t("summary.headerSubtitle")}
             </p>
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <SummaryCard label={t("summary.totalGross")} value={euroFormatter.format(summary.totalBruto)} accent />
-            <SummaryCard label={t("summary.irpfPaid")} value={euroFormatter.format(summary.irpfRetenido)} />
-            <SummaryCard label={t("summary.estimatedQuota")} value={euroFormatter.format(summary.cuotaIrpfEstimada)} />
-            <SummaryCard label={t("summary.pendingIrpf")} value={euroFormatter.format(summary.irpfPendiente)} />
+            <SummaryCard
+              label={t("summary.totalGross")}
+              value={euroFormatter.format(summary.totalBruto)}
+              accent
+            />
+            <SummaryCard
+              label={t("summary.irpfPaid")}
+              value={euroFormatter.format(summary.irpfRetenido)}
+            />
+            <SummaryCard
+              label={t("summary.estimatedQuota")}
+              value={euroFormatter.format(summary.cuotaIrpfEstimada)}
+            />
+            <SummaryCard
+              label={t("summary.pendingIrpf")}
+              value={euroFormatter.format(summary.irpfPendiente)}
+            />
           </div>
         </section>
-
 
         {recommendation && (
           <section className="grid gap-4 rounded-4xl border border-emerald-200 bg-emerald-50 p-8 text-emerald-950 shadow-xl shadow-emerald-100 md:grid-cols-[1.4fr_0.6fr]">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">{t("summary.recommendationTag")}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700">
+                {t("summary.recommendationTag")}
+              </p>
               <h2 className="mt-3 text-2xl font-semibold">{t("summary.recommendationTitle")}</h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-emerald-900/80">
-                {t("summary.recommendationText", { percentage: recommendation.recommendedPercentage })}
+                {t("summary.recommendationText", {
+                  percentage: recommendation.recommendedPercentage,
+                })}
               </p>
               <p className="mt-3 text-sm text-emerald-900/70">
                 {t("summary.projectedPendingAfterRecommendation")}
@@ -296,7 +389,11 @@ export default function SummaryPage() {
                       <div className="flex items-center gap-3">
                         <button
                           type="button"
-                          onClick={() => setSelectedFutureIrpfOverride(Math.max(0, Number((selectedFutureIrpf - 1).toFixed(1))))}
+                          onClick={() =>
+                            setSelectedFutureIrpfOverride(
+                              Math.max(0, Number((selectedFutureIrpf - 1).toFixed(1)))
+                            )
+                          }
                           className="rounded-lg border border-emerald-200 bg-white px-3 py-1 text-sm font-semibold text-emerald-900 hover:bg-emerald-100"
                           aria-label={t("summary.decreaseIrpfAria")}
                         >
@@ -319,7 +416,11 @@ export default function SummaryPage() {
                         />
                         <button
                           type="button"
-                          onClick={() => setSelectedFutureIrpfOverride(Math.min(100, Number((selectedFutureIrpf + 1).toFixed(1))))}
+                          onClick={() =>
+                            setSelectedFutureIrpfOverride(
+                              Math.min(100, Number((selectedFutureIrpf + 1).toFixed(1)))
+                            )
+                          }
                           className="rounded-lg border border-emerald-200 bg-white px-3 py-1 text-sm font-semibold text-emerald-900 hover:bg-emerald-100"
                           aria-label={t("summary.increaseIrpfAria")}
                         >
@@ -332,16 +433,27 @@ export default function SummaryPage() {
                         {t("summary.treasuryResultWith", { percentage: selectedFutureIrpf })}
                         <span className="ml-1 font-semibold">
                           {irpfSimulation.haciendaResult >= 0
-                            ? t("summary.refundOf", { amount: euroFormatter.format(irpfSimulation.haciendaResult) })
-                            : t("summary.toPay", { amount: euroFormatter.format(Math.abs(irpfSimulation.haciendaResult)) })}
+                            ? t("summary.refundOf", {
+                                amount: euroFormatter.format(irpfSimulation.haciendaResult),
+                              })
+                            : t("summary.toPay", {
+                                amount: euroFormatter.format(
+                                  Math.abs(irpfSimulation.haciendaResult)
+                                ),
+                              })}
                         </span>
                       </p>
                       <p className="text-sm text-emerald-900/80">
-                        {t("summary.annualNetApprox")} <span className="font-semibold">{euroFormatter.format(irpfSimulation.annualNetSelected)}</span>
+                        {t("summary.annualNetApprox")}{" "}
+                        <span className="font-semibold">
+                          {euroFormatter.format(irpfSimulation.annualNetSelected)}
+                        </span>
                       </p>
                       <p className="text-sm text-emerald-900/80">
                         {t("summary.monthlyNetApprox", { payPeriods: irpfSimulation.payPeriods })}
-                        <span className="ml-1 font-semibold">{euroFormatter.format(irpfSimulation.monthlyNetSelected)}</span>
+                        <span className="ml-1 font-semibold">
+                          {euroFormatter.format(irpfSimulation.monthlyNetSelected)}
+                        </span>
                       </p>
                     </div>
                   </details>
@@ -350,15 +462,25 @@ export default function SummaryPage() {
             </div>
 
             <div className="flex flex-col justify-between rounded-3xl bg-white/70 p-6">
-              <p className="text-sm text-emerald-900/70">{t("summary.recommendedForFutureEmployment")}</p>
+              <p className="text-sm text-emerald-900/70">
+                {t("summary.recommendedForFutureEmployment")}
+              </p>
               <p className="mt-2 text-3xl font-semibold">{recommendation.recommendedPercentage}%</p>
               {recommendationBreakdown && (
                 <div className="mt-4 flex flex-col gap-2">
                   <p className="text-sm text-emerald-900/80">
-                    {t("summary.annualNetApprox")} <span className="font-semibold">{euroFormatter.format(recommendationBreakdown.annualNetApprox)}</span>
+                    {t("summary.annualNetApprox")}{" "}
+                    <span className="font-semibold">
+                      {euroFormatter.format(recommendationBreakdown.annualNetApprox)}
+                    </span>
                   </p>
                   <p className="text-sm text-emerald-900/80">
-                    {t("summary.monthlyNetApprox", { payPeriods: recommendationBreakdown.payPeriods })} <span className="font-semibold">{euroFormatter.format(recommendationBreakdown.monthlyNetApprox)}</span>
+                    {t("summary.monthlyNetApprox", {
+                      payPeriods: recommendationBreakdown.payPeriods,
+                    })}{" "}
+                    <span className="font-semibold">
+                      {euroFormatter.format(recommendationBreakdown.monthlyNetApprox)}
+                    </span>
                   </p>
                 </div>
               )}
@@ -371,40 +493,63 @@ export default function SummaryPage() {
 
         <section className="rounded-4xl border border-gray-200 bg-white p-8 shadow-xl shadow-gray-200/60">
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500">{t("summary.breakdownTag")}</p>
-            <h2 className="text-2xl font-semibold text-gray-900">{t("summary.breakdownTitle")}</h2>
-            <p className="text-sm text-gray-600">
-              {t("summary.breakdownSubtitle")}
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-500">
+              {t("summary.breakdownTag")}
             </p>
+            <h2 className="text-2xl font-semibold text-gray-900">{t("summary.breakdownTitle")}</h2>
+            <p className="text-sm text-gray-600">{t("summary.breakdownSubtitle")}</p>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5">
-              <p className="text-sm font-semibold text-gray-800">{t("summary.currentPayersDetail")}</p>
+              <p className="text-sm font-semibold text-gray-800">
+                {t("summary.currentPayersDetail")}
+              </p>
               <div className="mt-2">
-                {payerBreakdown.length === 0 && <DetailRow label={t("summary.noPayers")} value="-" />}
+                {payerBreakdown.length === 0 && (
+                  <DetailRow label={t("summary.noPayers")} value="-" />
+                )}
                 {payerBreakdown.map((payer) => (
                   <div key={payer.key} className="border-b border-gray-200/80 py-3 last:border-b-0">
                     <p className="text-sm font-semibold text-gray-800">{payer.name}</p>
                     <div className="mt-2 flex flex-col gap-1 text-xs text-gray-700">
-                      <span>{t("summary.period")}: {formatDate(payer.startDate)} - {formatDate(payer.endDate)}</span>
-                      <span>{t("summary.daysWorked")}: {payer.daysWorked}</span>
-                      <span>{t("summary.annualGrossReported")}: {euroFormatter.format(payer.annualGross)}</span>
-                      <span>{t("summary.dailyGross")}: {euroFormatter.format(payer.grossDaily)}</span>
+                      <span>
+                        {t("summary.period")}: {formatDate(payer.startDate)} -{" "}
+                        {formatDate(payer.endDate)}
+                      </span>
+                      <span>
+                        {t("summary.daysWorked")}: {payer.daysWorked}
+                      </span>
+                      <span>
+                        {t("summary.annualGrossReported")}:{" "}
+                        {euroFormatter.format(payer.annualGross)}
+                      </span>
+                      <span>
+                        {t("summary.dailyGross")}: {euroFormatter.format(payer.grossDaily)}
+                      </span>
                       <span>
                         {t("summary.periodGross")}: {euroFormatter.format(payer.brutoPeriodo)}
-                        {` (${decimalFormatter.format(payer.grossDaily)} x ${payer.daysWorked} dias)`}
+                        {payer.payPeriods === 14 && !payer.extraPaymentsProrated
+                          ? ` (${decimalFormatter.format(payer.grossDaily)} x ${payer.daysWorked} dias${payer.extraPaymentCount > 0 ? ` + ${payer.extraPaymentCount} paga(s) extra (${payer.extraPaymentMonths[0]} y ${payer.extraPaymentMonths[1]})` : ""})`
+                          : ` (${decimalFormatter.format(payer.grossDaily)} x ${payer.daysWorked} dias)`}
                       </span>
                       <span>
                         {t("summary.withheldIrpf")}: {euroFormatter.format(payer.retenidoPeriodo)}
                         {` (${payer.irpfPercentage}% sobre bruto periodo)`}
                       </span>
                       <span>
-                        {t("summary.socialSecurity")}: {euroFormatter.format(payer.socialSecurityPeriodo)}
+                        {t("summary.socialSecurity")}:{" "}
+                        {euroFormatter.format(payer.socialSecurityPeriodo)}
                         {` (${payer.socialSecurityPercentage}% sobre bruto periodo)`}
                       </span>
-                      <span>{t("summary.otherDeductions")}: {euroFormatter.format(payer.otherDeductionsPeriodo)}</span>
-                      <span>{t("summary.netWorkIncome")}: {euroFormatter.format(payer.rendimientoNetoPeriodo)}</span>
+                      <span>
+                        {t("summary.otherDeductions")}:{" "}
+                        {euroFormatter.format(payer.otherDeductionsPeriodo)}
+                      </span>
+                      <span>
+                        {t("summary.netWorkIncome")}:{" "}
+                        {euroFormatter.format(payer.rendimientoNetoPeriodo)}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -414,21 +559,44 @@ export default function SummaryPage() {
             <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5">
               <p className="text-sm font-semibold text-gray-800">{t("summary.currentTotals")}</p>
               <div className="mt-2">
-                <DetailRow label={t("summary.totalGross")} value={euroFormatter.format(summary.totalBruto)} />
-                <DetailRow label={t("summary.totalNetIncome")} value={euroFormatter.format(summary.totalRendimientoNeto)} />
-                <DetailRow label={t("summary.withheldIrpf")} value={euroFormatter.format(summary.irpfRetenido)} />
-                <DetailRow label={t("summary.taxBase")} value={euroFormatter.format(summary.baseLiquidable)} />
-                <DetailRow label={t("summary.estimatedQuota")} value={euroFormatter.format(summary.cuotaIrpfEstimada)} />
-                <DetailRow label={t("summary.currentPending")} value={euroFormatter.format(summary.irpfPendiente)} />
+                <DetailRow
+                  label={t("summary.totalGross")}
+                  value={euroFormatter.format(summary.totalBruto)}
+                />
+                <DetailRow
+                  label={t("summary.totalNetIncome")}
+                  value={euroFormatter.format(summary.totalRendimientoNeto)}
+                />
+                <DetailRow
+                  label={t("summary.withheldIrpf")}
+                  value={euroFormatter.format(summary.irpfRetenido)}
+                />
+                <DetailRow
+                  label={t("summary.taxBase")}
+                  value={euroFormatter.format(summary.baseLiquidable)}
+                />
+                <DetailRow
+                  label={t("summary.estimatedQuota")}
+                  value={euroFormatter.format(summary.cuotaIrpfEstimada)}
+                />
+                <DetailRow
+                  label={t("summary.currentPending")}
+                  value={euroFormatter.format(summary.irpfPendiente)}
+                />
               </div>
             </div>
           </div>
 
           {recommendation && recommendationBreakdown && (
             <div className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
-              <p className="text-sm font-semibold text-emerald-900">{t("summary.futureProjection")}</p>
+              <p className="text-sm font-semibold text-emerald-900">
+                {t("summary.futureProjection")}
+              </p>
               <div className="mt-2">
-                <DetailRow label={t("summary.futurePeriodGross")} value={euroFormatter.format(recommendation.futureGrossForPeriod)} />
+                <DetailRow
+                  label={t("summary.futurePeriodGross")}
+                  value={euroFormatter.format(recommendation.futureGrossForPeriod)}
+                />
                 <DetailRow
                   label={t("summary.recommendedFutureWithholding")}
                   value={`${recommendation.recommendedPercentage}% (${euroFormatter.format(recommendationBreakdown.futureWithheldWithRecommendation)})`}
@@ -439,21 +607,30 @@ export default function SummaryPage() {
                 />
                 <DetailRow
                   label={t("summary.newPayerAnnualSocialSecurity")}
-                  value={euroFormatter.format(recommendationBreakdown.annualSocialSecurityEstimated)}
+                  value={euroFormatter.format(
+                    recommendationBreakdown.annualSocialSecurityEstimated
+                  )}
                 />
                 <DetailRow
                   label={t("summary.newPayerAnnualWithholding")}
-                  value={euroFormatter.format(recommendationBreakdown.annualWithheldWithRecommendation)}
+                  value={euroFormatter.format(
+                    recommendationBreakdown.annualWithheldWithRecommendation
+                  )}
                 />
                 <DetailRow
                   label={t("summary.newPayerAnnualNet")}
                   value={euroFormatter.format(recommendationBreakdown.annualNetApprox)}
                 />
                 <DetailRow
-                  label={t("summary.newPayerMonthlyNet", { payPeriods: recommendationBreakdown.payPeriods })}
+                  label={t("summary.newPayerMonthlyNet", {
+                    payPeriods: recommendationBreakdown.payPeriods,
+                  })}
                   value={euroFormatter.format(recommendationBreakdown.monthlyNetApprox)}
                 />
-                <DetailRow label={t("summary.projectedWithheldTotal")} value={euroFormatter.format(recommendationBreakdown.totalWithheldProjected)} />
+                <DetailRow
+                  label={t("summary.projectedWithheldTotal")}
+                  value={euroFormatter.format(recommendationBreakdown.totalWithheldProjected)}
+                />
                 <DetailRow
                   label={t("summary.projectedEstimatedQuota")}
                   value={euroFormatter.format(recommendation.projectedSummary.cuotaIrpfEstimada)}
@@ -469,7 +646,9 @@ export default function SummaryPage() {
                 {irpfSimulation && (
                   <>
                     <DetailRow
-                      label={t("summary.selectorFutureWithholding", { percentage: selectedFutureIrpf })}
+                      label={t("summary.selectorFutureWithholding", {
+                        percentage: selectedFutureIrpf,
+                      })}
                       value={euroFormatter.format(irpfSimulation.futureWithheldSelected)}
                     />
                     <DetailRow
@@ -480,8 +659,12 @@ export default function SummaryPage() {
                       label={t("summary.selectorTreasuryResult")}
                       value={
                         irpfSimulation.haciendaResult >= 0
-                          ? t("summary.refundOf", { amount: euroFormatter.format(irpfSimulation.haciendaResult) })
-                          : t("summary.toPay", { amount: euroFormatter.format(Math.abs(irpfSimulation.haciendaResult)) })
+                          ? t("summary.refundOf", {
+                              amount: euroFormatter.format(irpfSimulation.haciendaResult),
+                            })
+                          : t("summary.toPay", {
+                              amount: euroFormatter.format(Math.abs(irpfSimulation.haciendaResult)),
+                            })
                       }
                     />
                   </>
@@ -493,24 +676,23 @@ export default function SummaryPage() {
 
         <section className="grid gap-4 rounded-4xl border border-gray-200 bg-gray-950 p-8 text-white shadow-2xl shadow-gray-400/30 md:grid-cols-[1.4fr_0.6fr]">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-400">{t("summary.quickReadTag")}</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gray-400">
+              {t("summary.quickReadTag")}
+            </p>
             <h2 className="mt-3 text-2xl font-semibold">{t("summary.quickReadTitle")}</h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-gray-300">
               {t("summary.quickReadText")}
             </p>
           </div>
 
-
           <div className="flex flex-col justify-between rounded-3xl bg-white/10 p-6">
             <p className="text-sm text-gray-300">{t("summary.taxBase")}</p>
-            <p className="mt-2 text-3xl font-semibold">{euroFormatter.format(summary.baseLiquidable)}</p>
-            <p className="mt-6 text-sm text-gray-300">
-              {t("summary.taxBaseCardText")}
+            <p className="mt-2 text-3xl font-semibold">
+              {euroFormatter.format(summary.baseLiquidable)}
             </p>
+            <p className="mt-6 text-sm text-gray-300">{t("summary.taxBaseCardText")}</p>
           </div>
         </section>
-
-
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link
