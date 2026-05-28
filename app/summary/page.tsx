@@ -205,18 +205,23 @@ export default function SummaryPage() {
       return null;
     }
 
-    const targetPendingByPreference: Record<"devolucion-segura" | "blindado" | "ajustado", number> = {
-      "devolucion-segura": -1000,
-      blindado: -400,
-      ajustado: 0,
-    };
+    const targetPendingByPreference: Record<"devolucion-segura" | "blindado" | "ajustado", number> =
+      {
+        "devolucion-segura": -1000,
+        blindado: -400,
+        ajustado: 0,
+      };
 
-    const result = getRecommendedIrpfPercentageForFuturePayer(pagadores, {
-      name: pagadorFuturo.name,
-      startDate: pagadorFuturo.startDate,
-      annualGross: pagadorFuturo.grossSalary,
-      payPeriods: pagadorFuturo.payPeriods,
-    }, targetPendingByPreference[retentionPreference]);
+    const result = getRecommendedIrpfPercentageForFuturePayer(
+      pagadores,
+      {
+        name: pagadorFuturo.name,
+        startDate: pagadorFuturo.startDate,
+        annualGross: pagadorFuturo.grossSalary,
+        payPeriods: pagadorFuturo.payPeriods,
+      },
+      targetPendingByPreference[retentionPreference]
+    );
 
     if (result.futureGrossForPeriod <= 0) {
       return null;

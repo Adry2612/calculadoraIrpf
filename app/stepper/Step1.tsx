@@ -26,10 +26,7 @@ export function Step1({ onNext }: Step1Props) {
     { value: "blindado", label: t("step1.retentionShielded") },
     { value: "ajustado", label: t("step1.retentionAdjusted") },
   ] as const;
-  const retentionInfoByOption: Record<
-    "devolucion-segura" | "blindado" | "ajustado",
-    string
-  > = {
+  const retentionInfoByOption: Record<"devolucion-segura" | "blindado" | "ajustado", string> = {
     "devolucion-segura": t("step1.retentionSafeRefundInfo"),
     blindado: t("step1.retentionShieldedInfo"),
     ajustado: t("step1.retentionAdjustedInfo"),

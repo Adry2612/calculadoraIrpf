@@ -70,11 +70,7 @@ const getDaysInYear = (year: number) => {
   return isLeapYear ? 366 : 365;
 };
 
-const getCurrentYearPeriod = (
-  startDate: string,
-  endDate: string,
-  capToCurrentMonth = false
-) => {
+const getCurrentYearPeriod = (startDate: string, endDate: string, capToCurrentMonth = false) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -170,9 +166,7 @@ export const getExtraPaymentCountForPeriod = (
     return month;
   }) as [number, number];
 
-  const extraPaymentDates = safeMonths.map((month) =>
-    new Date(currentYear, month, 0)
-  );
+  const extraPaymentDates = safeMonths.map((month) => new Date(currentYear, month, 0));
 
   return extraPaymentDates.reduce((count, extraDate) => {
     if (
