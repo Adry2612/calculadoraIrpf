@@ -51,7 +51,8 @@ interface CalculadoraStore {
     annualGrossSalary: number,
     payPeriods?: 12 | 14,
     extraPaymentsProrated?: boolean,
-    extraPaymentMonths?: [number, number]
+    extraPaymentMonths?: [number, number],
+    capToCurrentMonth?: boolean
   ) => number;
   calculateTotalIrpfWithheld: (
     startDate: string,
@@ -60,7 +61,8 @@ interface CalculadoraStore {
     irpfPercentage: number,
     payPeriods?: 12 | 14,
     extraPaymentsProrated?: boolean,
-    extraPaymentMonths?: [number, number]
+    extraPaymentMonths?: [number, number],
+    capToCurrentMonth?: boolean
   ) => number;
   getTotalGrossAllPayers: () => number;
   getTotalIrpfAllPayers: () => number;
