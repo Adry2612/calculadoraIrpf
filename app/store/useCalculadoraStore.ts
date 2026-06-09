@@ -34,6 +34,7 @@ interface PersonalInfo {
   birthYear: number;
   childrenCount: number;
   discapacidad: boolean;
+  discapacidadGrado: 0 | 33 | 65;
   ascendientesACargo: boolean;
   retentionPreference: "devolucion-segura" | "blindado" | "ajustado";
 }
@@ -106,7 +107,8 @@ export const useCalculadoraStore = create<CalculadoraStore>((set, get) => ({
   getIrpfSummary: () => {
     const totalBruto = get().getTotalGrossAllPayers();
     const irpfRetenido = get().getTotalIrpfAllPayers();
-    return getIrpfSummary(totalBruto, irpfRetenido);
+    const datosPersonales = get().datosPersonales;
+    return getIrpfSummary(totalBruto, irpfRetenido, 5550, undefined, totalBruto, datosPersonales);
   },
   datosPersonales: {
     region: "",
@@ -114,6 +116,7 @@ export const useCalculadoraStore = create<CalculadoraStore>((set, get) => ({
     birthYear: new Date().getFullYear(),
     childrenCount: 0,
     discapacidad: false,
+    discapacidadGrado: 0,
     ascendientesACargo: false,
     retentionPreference: "ajustado",
   },

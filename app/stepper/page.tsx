@@ -10,17 +10,23 @@ export default function Home() {
   const step = useCalculadoraStore((state) => state.step);
   const setStep = useCalculadoraStore((state) => state.setStep);
   const { t } = useI18n();
+  const progress = Math.min(100, Math.max(25, step * 25));
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black p-16">
-      <div className="flex flex-1 flex-col w-full max-w-3xl bg-gray-200 rounded-3xl">
+    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 p-3 font-sans dark:bg-black sm:p-6 lg:p-10">
+      <div className="flex w-full max-w-4xl flex-1 flex-col rounded-3xl bg-gray-200">
         {/* Stepper */}
-        <div className="flex flex-col w-1/3 p-8">
+        <div className="flex w-full flex-col p-5 sm:p-8">
           <h1 className="text-sm mb-3 text-start text-gray-500 dark:text-gray-300">
             {" "}
             {t("stepper.stepOf", { step })}{" "}
           </h1>
-          <span className="border-b-3 border-gray-800 dark:border-gray-600" />
+          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-300/80">
+            <span
+              className="block h-full rounded-full bg-gray-800 transition-all dark:bg-gray-600"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
         {step === 1 && <Step1 onNext={() => setStep(2)} />}

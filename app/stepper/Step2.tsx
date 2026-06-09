@@ -87,8 +87,8 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   };
 
   return (
-    <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300">
+    <div className="flex w-full max-w-4xl flex-col p-5 sm:p-8">
+      <h1 className="mb-3 text-start text-2xl font-bold text-gray-800 dark:text-gray-300 sm:text-3xl">
         {" "}
         {t("step2.title")}
       </h1>
@@ -171,14 +171,14 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/70">
           <div className="flex flex-col gap-2 w-full">
             <label className="font-semibold"> {t("step2.annualPayPeriods")} </label>
-            <div className="inline-flex w-fit rounded-full border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800">
+            <div className="flex w-full flex-col rounded-2xl border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800 sm:inline-flex sm:w-fit sm:flex-row sm:rounded-full">
               <button
                 type="button"
                 onClick={() => {
                   handleFormChange("payPeriods", 12);
                   handleFormChange("extraPaymentsProrated", false);
                 }}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors sm:rounded-full ${
                   employmentForm.payPeriods === 12
                     ? "bg-gray-800 text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -189,7 +189,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
               <button
                 type="button"
                 onClick={() => handleFormChange("payPeriods", 14)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors sm:rounded-full ${
                   employmentForm.payPeriods === 14
                     ? "bg-gray-800 text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -317,21 +317,21 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         </div>
       </form>
 
-      <div className="flex flex-1 items-center justify-between mt-8">
+      <div className="mt-8 flex flex-1 flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={onBack}
-          className="px-6 py-3 rounded-lg text-gray-800 hover:bg-gray-700 transition-colors"
+          className="rounded-lg px-6 py-3 text-gray-800 transition-colors hover:bg-gray-200 sm:hover:bg-gray-700"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           {t("step2.back")}
         </button>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           {pagadores.length > 0 && (
             <button
               type="button"
               onClick={onNext}
-              className="px-6 py-3 rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-100 transition-colors dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+              className="rounded-lg border border-gray-300 px-6 py-3 text-gray-800 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
             >
               {t("step2.goToEmploymentSummary")}
               <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
@@ -340,7 +340,7 @@ export function Step2({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           <button
             type="button"
             onClick={handleAddEmployment}
-            className="px-6 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+            className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
           >
             <FontAwesomeIcon icon={faPlus} className="mr-2" />
             {t("step2.addEmployment")}

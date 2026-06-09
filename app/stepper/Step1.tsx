@@ -40,9 +40,21 @@ export function Step1({ onNext }: Step1Props) {
     updatePersonalInfo({ childrenCount: datosPersonales.childrenCount + 1 });
   };
 
+  const handleDisabilityToggle = () => {
+    if (datosPersonales.discapacidad) {
+      updatePersonalInfo({ discapacidad: false, discapacidadGrado: 0 });
+      return;
+    }
+
+    updatePersonalInfo({
+      discapacidad: true,
+      discapacidadGrado: datosPersonales.discapacidadGrado === 65 ? 65 : 33,
+    });
+  };
+
   return (
-    <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300">
+    <div className="flex w-full max-w-4xl flex-col p-5 sm:p-8">
+      <h1 className="mb-3 text-start text-2xl font-bold text-gray-800 dark:text-gray-300 sm:text-3xl">
         {" "}
         {t("step1.title")}
       </h1>
@@ -100,7 +112,7 @@ export function Step1({ onNext }: Step1Props) {
             <input
               className={fieldClass}
               type="number"
-              placeholder="YYYY"
+              placeholder={t("step1.birthYearPlaceholder")}
               value={datosPersonales.birthYear}
               onChange={(event) =>
                 updatePersonalInfo({
@@ -155,7 +167,7 @@ export function Step1({ onNext }: Step1Props) {
                 role="switch"
                 aria-checked={datosPersonales.discapacidad}
                 aria-label={t("step1.disabilitySwitchAria")}
-                onClick={() => updatePersonalInfo({ discapacidad: !datosPersonales.discapacidad })}
+                onClick={handleDisabilityToggle}
                 className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors ${
                   datosPersonales.discapacidad ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
                 }`}
@@ -167,6 +179,33 @@ export function Step1({ onNext }: Step1Props) {
                 />
               </button>
             </div>
+
+            {datosPersonales.discapacidad && (
+              <div className="mt-2">
+                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t("step1.disabilityDegreeLabel")}
+                </label>
+                <div className="relative">
+                  <select
+                    className={`${fieldClass} pr-12 appearance-none`}
+                    value={datosPersonales.discapacidadGrado}
+                    onChange={(event) => {
+                      const degree = Number.parseInt(event.target.value, 10) as 33 | 65;
+                      updatePersonalInfo({
+                        discapacidad: true,
+                        discapacidadGrado: degree,
+                      });
+                    }}
+                  >
+                    <option value={33}>{t("step1.disabilityDegree33")}</option>
+                    <option value={65}>{t("step1.disabilityDegree65")}</option>
+                  </select>
+                  <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500 dark:text-gray-400">
+                    <FontAwesomeIcon icon={faChevronDown} className="h-3 w-3" />
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800/70">
@@ -212,13 +251,13 @@ export function Step1({ onNext }: Step1Props) {
             </p>
           </div>
 
-          <div className="inline-flex w-fit rounded-full border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800">
+          <div className="flex w-full flex-col rounded-2xl border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800 sm:inline-flex sm:w-fit sm:flex-row sm:rounded-full">
             {retentionOptions.map((option) => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => updatePersonalInfo({ retentionPreference: option.value })}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors sm:rounded-full ${
                   datosPersonales.retentionPreference === option.value
                     ? "bg-gray-800 text-white"
                     : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -237,15 +276,15 @@ export function Step1({ onNext }: Step1Props) {
         </div>
       </form>
 
-      <div className="flex flex-row justify-center items-center bg-gray-100 mt-8 p-4 rounded-lg">
-        <FontAwesomeIcon icon={faLock} className="text-gray-500 dark:text-gray-300 mr-6" />
+      <div className="mt-8 flex flex-col items-start justify-center gap-2 rounded-lg bg-gray-100 p-4 sm:flex-row sm:items-center">
+        <FontAwesomeIcon icon={faLock} className="mr-0 text-gray-500 dark:text-gray-300 sm:mr-3" />
         <h2 className="text-sm text-gray-500 dark:text-gray-300">{t("step1.privacyText")} </h2>
       </div>
 
-      <div className="flex flex-1 items-center justify-between mt-8">
+      <div className="mt-8 flex flex-1 flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
-          className="px-6 py-3 rounded-lg text-gray-800 hover:bg-gray-700 transition-colors"
+          className="rounded-lg px-6 py-3 text-gray-800 transition-colors hover:bg-gray-200 sm:hover:bg-gray-700"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           {t("step1.back")}
@@ -253,7 +292,7 @@ export function Step1({ onNext }: Step1Props) {
         <button
           type="button"
           onClick={onNext}
-          className="px-6 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+          className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
         >
           {t("step1.next")}
           <FontAwesomeIcon icon={faArrowRight} className="ml-2" />

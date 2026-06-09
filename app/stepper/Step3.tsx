@@ -17,8 +17,8 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   };
 
   return (
-    <div className="flex flex-col w-full max-w-4xl p-8">
-      <h1 className="text-3xl mb-3 text-start text-gray-800 font-bold dark:text-gray-300">
+    <div className="flex w-full max-w-4xl flex-col p-5 sm:p-8">
+      <h1 className="mb-3 text-start text-2xl font-bold text-gray-800 dark:text-gray-300 sm:text-3xl">
         {" "}
         {t("step3.title")}{" "}
       </h1>
@@ -31,7 +31,7 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         {pagadores.map((pagador, index) => (
           <div
             key={index}
-            className="flex flex-row gap-2 w-full p-4 rounded-lg justify-between bg-white dark:bg-gray-800"
+            className="flex w-full flex-col justify-between gap-3 rounded-lg bg-white p-4 dark:bg-gray-800 sm:flex-row sm:items-center"
           >
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-300">
@@ -41,8 +41,8 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
                 {formatDate(pagador.startDate)} - {formatDate(pagador.endDate)}
               </p>
             </div>
-            <div className="flex flex-col gap-1">
-              <p className="text-2xl text-gray-800 dark:text-gray-400">
+            <div className="flex flex-col gap-1 sm:items-end">
+              <p className="text-xl text-gray-800 dark:text-gray-400 sm:text-2xl">
                 {calculateTotalForPeriod(
                   pagador.startDate,
                   pagador.endDate,
@@ -67,11 +67,11 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         {t("step3.addAnotherPayer")}
       </button>
 
-      <div className="flex flex-col gap-2 w-full p-4 rounded-lg justify-between bg-gray-800 dark:bg-gray-800 mt-4">
+      <div className="mt-4 flex w-full flex-col gap-2 rounded-lg bg-gray-800 p-4 dark:bg-gray-800">
         <h3 className="text-lg font-semibold text-white dark:text-gray-300">
           {t("step3.grossTotalTitle")}
         </h3>
-        <div className="flex flex-row items-center justify-between gap-1">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-1">
           <p className="text-lg text-white dark:text-gray-400">
             {totalGrossAllPayers.toLocaleString()}€
           </p>
@@ -82,24 +82,24 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-8">
+      <div className="mt-8 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={onBack}
-          className="px-6 py-3 rounded-lg text-gray-800 hover:bg-gray-700 transition-colors"
+          className="rounded-lg px-6 py-3 text-gray-800 transition-colors hover:bg-gray-200 sm:hover:bg-gray-700"
         >
           {t("step3.back")}
         </button>
         <button
           type="button"
           onClick={onNext}
-          className="px-6 py-3 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+          className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
         >
           {t("step3.calculateResults")}
         </button>
       </div>
 
-      <div className="flex flex-row justify-center items-center bg-gray-100 mt-8 p-4 rounded-lg">
+      <div className="mt-8 flex items-center justify-center rounded-lg bg-gray-100 p-4">
         <p className="text-sm text-gray-500 dark:text-gray-300">{t("step3.note")} </p>
       </div>
     </div>

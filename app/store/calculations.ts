@@ -1,3 +1,5 @@
+import { calcIrpfRegional, calcIrpfState, calcPersonalMinimum } from "spanish-tax-calculators";
+
 export type PayerCalculationInput = {
   name: string;
   grossSalary: number;
@@ -41,6 +43,14 @@ export type FutureIrpfRecommendation = {
   projectedPendingAfterRecommendation: number;
 };
 
+export type PersonalTaxProfile = {
+  region: string;
+  birthYear: number;
+  childrenCount: number;
+  discapacidadGrado: 0 | 33 | 65;
+  ascendientesACargo: boolean;
+};
+
 // Tramos generales de referencia para IRPF (tipo combinado habitual).
 // Nota: pueden variar por comunidad autonoma y ejercicio fiscal.
 export const IRPF_BRACKETS: IrpfBracket[] = [
@@ -53,6 +63,111 @@ export const IRPF_BRACKETS: IrpfBracket[] = [
 ];
 
 export const DEFAULT_SOCIAL_SECURITY_PERCENTAGE = 6.4;
+
+const ASCENDANT_ALLOWANCE = 1150;
+
+const REGION_TO_IRPF_REGION: Record<string, string> = {
+  andalucia: "andalucia",
+  aragon: "aragon",
+  asturias: "asturias",
+  baleares: "baleares",
+  canarias: "canarias",
+  cantabria: "cantabria",
+  "castilla-la-mancha": "castilla_la_mancha",
+  "castilla-y-leon": "castilla_leon",
+  cataluna: "catalunya",
+  extremadura: "extremadura",
+  galicia: "galicia",
+  madrid: "madrid",
+  murcia: "murcia",
+  navarra: "navarra",
+  "pais-vasco": "pais_vasco",
+  "la-rioja": "la_rioja",
+  "comunidad-valenciana": "comunidad_valenciana",
+};
+
+const normalizeRegion = (region: string) => REGION_TO_IRPF_REGION[region] ?? "";
+
+type ForalRegion = "navarra" | "pais_vasco";
+
+type ProgressiveBracket = {
+  upTo: number;
+  rate: number;
+};
+
+// Tablas forales mantenidas localmente para poder actualizarlas de forma independiente.
+const FORAL_IRPF_BRACKETS: Record<ForalRegion, ProgressiveBracket[]> = {
+  navarra: [
+    { upTo: 12450, rate: 0.085 },
+    { upTo: 20200, rate: 0.105 },
+    { upTo: 35200, rate: 0.145 },
+    { upTo: 60000, rate: 0.175 },
+    { upTo: 300000, rate: 0.22 },
+    { upTo: Number.POSITIVE_INFINITY, rate: 0.235 },
+  ],
+  pais_vasco: [
+    { upTo: 12450, rate: 0.07 },
+    { upTo: 20200, rate: 0.1 },
+    { upTo: 35200, rate: 0.135 },
+    { upTo: 60000, rate: 0.165 },
+    { upTo: 300000, rate: 0.2 },
+    { upTo: Number.POSITIVE_INFINITY, rate: 0.22 },
+  ],
+};
+
+const isForalRegion = (region: string): region is ForalRegion =>
+  region === "navarra" || region === "pais_vasco";
+
+const calculateProgressiveQuota = (base: number, brackets: ProgressiveBracket[]) => {
+  if (base <= 0) {
+    return 0;
+  }
+
+  let tax = 0;
+  let previousLimit = 0;
+
+  for (const { upTo, rate } of brackets) {
+    if (base <= previousLimit) {
+      break;
+    }
+
+    const taxableSlice = Math.min(base, upTo) - previousLimit;
+    if (taxableSlice > 0) {
+      tax += taxableSlice * rate;
+    }
+
+    previousLimit = upTo;
+  }
+
+  return Number(tax.toFixed(2));
+};
+
+const calculateRegionalIrpf = (base: number, region: string) => {
+  if (isForalRegion(region)) {
+    return calculateProgressiveQuota(base, FORAL_IRPF_BRACKETS[region]);
+  }
+
+  return calcIrpfRegional(base, region);
+};
+
+const getPersonalTaxInputs = (personalInfo: PersonalTaxProfile, currentYear: number) => {
+  const age = Math.max(18, currentYear - personalInfo.birthYear);
+  const disabilityLevel: 0 | 33 | 65 = personalInfo.discapacidadGrado;
+
+  const basePersonalMinimum = calcPersonalMinimum({
+    age,
+    numChildren: personalInfo.childrenCount,
+    childrenUnder3: 0,
+    disabilityLevel,
+  });
+
+  const ascendantMinimum = personalInfo.ascendientesACargo ? ASCENDANT_ALLOWANCE : 0;
+
+  return {
+    minimoPersonal: Number((basePersonalMinimum + ascendantMinimum).toFixed(2)),
+    normalizedRegion: normalizeRegion(personalInfo.region),
+  };
+};
 
 const getCurrentYearBounds = () => {
   const currentYear = new Date().getFullYear();
@@ -362,10 +477,25 @@ export const getIrpfSummary = (
   irpfRetenido: number,
   minimoPersonal = 5550,
   brackets: IrpfBracket[] = IRPF_BRACKETS,
-  totalRendimientoNeto = totalBruto
+  totalRendimientoNeto = totalBruto,
+  personalInfo?: PersonalTaxProfile
 ): IrpfSummary => {
-  const baseLiquidable = getBaseLiquidable(totalRendimientoNeto, minimoPersonal);
-  const cuotaIrpfEstimada = calculateIrpfFromBase(baseLiquidable, brackets);
+  const { currentYear } = getCurrentYearBounds();
+  const personalTaxInputs = personalInfo ? getPersonalTaxInputs(personalInfo, currentYear) : null;
+  const effectiveMinimum = personalTaxInputs?.minimoPersonal ?? minimoPersonal;
+  const baseLiquidable = getBaseLiquidable(totalRendimientoNeto, effectiveMinimum);
+
+  const cuotaIrpfEstimada = personalTaxInputs?.normalizedRegion
+    ? Number(
+        Math.max(
+          0,
+          calcIrpfState(totalRendimientoNeto) -
+            calcIrpfState(effectiveMinimum) +
+            (calculateRegionalIrpf(totalRendimientoNeto, personalTaxInputs.normalizedRegion) -
+              calculateRegionalIrpf(effectiveMinimum, personalTaxInputs.normalizedRegion))
+        ).toFixed(2)
+      )
+    : calculateIrpfFromBase(baseLiquidable, brackets);
   const irpfPendiente = Number((cuotaIrpfEstimada - irpfRetenido).toFixed(2));
 
   return {
@@ -382,7 +512,8 @@ export const getIrpfSummaryWithFuturePayer = (
   pagadores: PayerCalculationInput[],
   pagadorFuturo: FuturePayerCalculationInput,
   minimoPersonal = 5550,
-  brackets: IrpfBracket[] = IRPF_BRACKETS
+  brackets: IrpfBracket[] = IRPF_BRACKETS,
+  personalInfo?: PersonalTaxProfile
 ): IrpfSummary => {
   const totalBrutoTodosPagadores = getTotalGrossAllPayers(pagadores);
   const totalRendimientoNetoTodosPagadores = getTotalNetWorkIncomeAllPayers(pagadores);
@@ -424,7 +555,8 @@ export const getIrpfSummaryWithFuturePayer = (
     totalIrpf,
     minimoPersonal,
     brackets,
-    totalRendimientoNetoGeneral
+    totalRendimientoNetoGeneral,
+    personalInfo
   );
 };
 
@@ -433,13 +565,15 @@ export const getRecommendedIrpfPercentageForFuturePayer = (
   pagadorFuturo: FuturePayerCalculationInput,
   desiredPending = 0,
   minimoPersonal = 5550,
-  brackets: IrpfBracket[] = IRPF_BRACKETS
+  brackets: IrpfBracket[] = IRPF_BRACKETS,
+  personalInfo?: PersonalTaxProfile
 ): FutureIrpfRecommendation => {
   const projectedSummary = getIrpfSummaryWithFuturePayer(
     pagadores,
     pagadorFuturo,
     minimoPersonal,
-    brackets
+    brackets,
+    personalInfo
   );
   const currentIrpfWithheld = getTotalIrpfAllPayers(pagadores);
 
@@ -477,7 +611,8 @@ export const getRecommendedIrpfPercentageForFuturePayer = (
     Number((currentIrpfWithheld + futureWithheldWithRecommendation).toFixed(2)),
     minimoPersonal,
     brackets,
-    projectedSummary.totalRendimientoNeto
+    projectedSummary.totalRendimientoNeto,
+    personalInfo
   );
 
   return {
