@@ -23,7 +23,7 @@ export function LanguageSwitcher() {
   }, [locale, setLocale]);
 
   return (
-    <div className="fixed bottom-3 left-1/2 z-50 w-[calc(100vw-1rem)] max-w-max -translate-x-1/2 rounded-full border border-gray-300 bg-white/95 p-1 shadow-md backdrop-blur sm:left-auto sm:right-4 sm:top-4 sm:bottom-auto sm:w-auto sm:translate-x-0">
+    <div className="rounded-md border border-slate-200 bg-white p-0.5">
       <div className="inline-flex max-w-full items-center gap-1 overflow-x-auto">
         {LOCALES.map((item) => (
           <button
@@ -33,10 +33,10 @@ export function LanguageSwitcher() {
               setLocale(item.value);
               window.localStorage.setItem("locale", item.value);
             }}
-            className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors sm:px-3 ${
+            className={`shrink-0 rounded px-1.5 py-1 text-[10px] font-semibold transition-colors sm:px-2 sm:text-xs ${
               locale === item.value
-                ? "bg-gray-900 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-100"
+                ? "bg-[#20394d] text-white"
+                : "bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
             aria-label={`Cambiar idioma a ${item.label}`}
           >

@@ -9,80 +9,81 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useI18n } from "../i18n/useI18n";
+import { useCalculadoraStore } from "../store/useCalculadoraStore";
 
 export default function HowWeWork() {
   const { dictionary } = useI18n();
+  const resetCalculation = useCalculadoraStore((state) => state.resetCalculation);
   const howWeWork = dictionary.howWeWork;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <div className="flex flex-col items-center justify-center px-4 py-8 sm:px-8 sm:py-12">
-        <h1 className="mb-4 text-center text-3xl font-bold sm:text-4xl">{howWeWork.title}</h1>
-        <p className="w-full max-w-3xl text-center text-base text-gray-600 sm:text-lg">
-          {howWeWork.subtitle}
-        </p>
-      </div>
-
-      <div className="grid w-full gap-6 bg-neutral-100 px-4 py-8 sm:px-8 sm:py-12 lg:grid-cols-3">
-        <div className="flex flex-col items-start justify-center rounded-xl border border-neutral-100 bg-white p-6">
-          <p className="rounded-full bg-neutral-800 p-6 text-white w-10 h-10 flex justify-center items-center mb-6">
-            01
-          </p>
-          <p className="text-xl font-bold mb-2"> {howWeWork.step1Title} </p>
-          <p className="text-gray-600">{howWeWork.step1Text}</p>
-        </div>
-        <div className="flex flex-col items-start justify-center rounded-xl border border-neutral-100 bg-white p-6">
-          <p className="rounded-full bg-neutral-800 p-6 text-white w-10 h-10 flex justify-center items-center mb-6">
-            02
-          </p>
-          <p className="text-xl font-bold mb-2"> {howWeWork.step2Title} </p>
-          <p className="text-gray-600">{howWeWork.step2Text}</p>
-        </div>
-        <div className="flex flex-col items-start justify-center rounded-xl border border-neutral-100 bg-white p-6">
-          <p className="rounded-full bg-neutral-800 p-6 text-white w-10 h-10 flex justify-center items-center mb-6">
-            03
-          </p>
-          <p className="text-xl font-bold mb-2"> {howWeWork.step3Title} </p>
-          <p className="text-gray-600">{howWeWork.step3Text}</p>
-        </div>
-      </div>
-
-      <div className="grid w-full gap-4 bg-white px-4 py-8 sm:grid-cols-3 sm:gap-0 sm:p-12">
-        <div className="flex flex-col items-center justify-center p-6">
-          <FontAwesomeIcon icon={faCompassDrafting} className="h-10" />
-          <p className="text-xl font-bold my-1"> {howWeWork.pillar1Title} </p>
-          <p className="text-gray-600 text-center">{howWeWork.pillar1Text}</p>
-        </div>
-        <div className="flex flex-col items-center justify-center p-6">
-          <FontAwesomeIcon icon={faUserShield} className="h-10" />
-          <p className="text-xl font-bold my-1"> {howWeWork.pillar2Title} </p>
-          <p className="text-gray-600 text-center">{howWeWork.pillar2Text}</p>
-        </div>
-        <div className="flex flex-col items-center justify-center p-6">
-          <FontAwesomeIcon icon={faGavel} className="h-10" />
-          <p className="text-xl font-bold my-1"> {howWeWork.pillar3Title} </p>
-          <p className="text-gray-600 text-center">{howWeWork.pillar3Text}</p>
-        </div>
-      </div>
-
-      <div className="relative mb-8 flex w-[calc(100%-2rem)] max-w-6xl flex-col gap-4 overflow-hidden rounded-xl bg-neutral-800 p-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-8">
-        <div className="flex flex-col items-start justify-between sm:w-2/3">
-          <p className="text-2xl font-bold text-white">{howWeWork.ctaTitle}</p>
-          <p className="text-neutral-200">{howWeWork.ctaSubtitle}</p>
+    <div className="flex-1">
+      <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+        <div className="max-w-3xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+            {howWeWork.title}
+          </h1>
+          <p className="mt-5 text-base leading-7 text-slate-600 sm:text-lg">{howWeWork.subtitle}</p>
         </div>
 
+        <div className="mt-12 border-y border-slate-200">
+          {[
+            { title: howWeWork.step1Title, description: howWeWork.step1Text },
+            { title: howWeWork.step2Title, description: howWeWork.step2Text },
+            { title: howWeWork.step3Title, description: howWeWork.step3Text },
+          ].map((step) => (
+            <article
+              key={step.title}
+              className="grid gap-3 border-b border-slate-200 py-7 last:border-b-0 sm:grid-cols-[0.8fr_1.2fr] sm:gap-10 sm:py-9"
+            >
+              <h2 className="text-xl font-semibold tracking-tight text-slate-900">{step.title}</h2>
+              <p className="max-w-2xl leading-7 text-slate-600">{step.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-y border-slate-200 bg-white">
+        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:px-8">
+          <h2 className="max-w-md text-3xl font-semibold tracking-tight text-slate-950">
+            {howWeWork.pillar2Title}
+          </h2>
+          <div className="grid gap-8 sm:grid-cols-2">
+            <article>
+              <FontAwesomeIcon icon={faCompassDrafting} className="size-5 text-[#315a78]" />
+              <h3 className="mt-3 font-semibold text-slate-900">{howWeWork.pillar1Title}</h3>
+              <p className="mt-2 leading-6 text-slate-600">{howWeWork.pillar1Text}</p>
+            </article>
+            <article>
+              <FontAwesomeIcon icon={faUserShield} className="size-5 text-[#315a78]" />
+              <h3 className="mt-3 font-semibold text-slate-900">{howWeWork.pillar2Title}</h3>
+              <p className="mt-2 leading-6 text-slate-600">{howWeWork.pillar2Text}</p>
+            </article>
+            <article className="sm:col-span-2">
+              <FontAwesomeIcon icon={faGavel} className="size-5 text-[#315a78]" />
+              <h3 className="mt-3 font-semibold text-slate-900">{howWeWork.pillar3Title}</h3>
+              <p className="mt-2 max-w-2xl leading-6 text-slate-600">{howWeWork.pillar3Text}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-12 sm:px-6 sm:py-16 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+            {howWeWork.ctaTitle}
+          </h2>
+          <p className="mt-2 text-slate-600">{howWeWork.ctaSubtitle}</p>
+        </div>
         <Link
           href="/stepper"
-          className="z-20 h-fit w-full rounded-xl bg-white px-6 py-3 text-center text-black sm:mx-2 sm:w-auto"
+          onClick={resetCalculation}
+          className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-md bg-[#20394d] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#315a78] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#315a78]"
         >
           {howWeWork.ctaButton}
+          <FontAwesomeIcon icon={faChartPie} className="size-4" />
         </Link>
-
-        <FontAwesomeIcon
-          icon={faChartPie}
-          className="pointer-events-none absolute -bottom-6 right-0 z-10 h-40 opacity-30 sm:h-52 sm:opacity-100"
-        />
-      </div>
+      </section>
     </div>
   );
 }

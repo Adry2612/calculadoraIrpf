@@ -3,8 +3,6 @@
 import {
   faArrowRight,
   faArrowTrendUp,
-  faCircleCheck,
-  faDoorOpen,
   faScaleBalanced,
   faWallet,
 } from "@fortawesome/free-solid-svg-icons";
@@ -12,159 +10,116 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { useI18n } from "./i18n/useI18n";
+import { useCalculadoraStore } from "./store/useCalculadoraStore";
 
 export default function Home() {
   const { dictionary } = useI18n();
+  const resetCalculation = useCalculadoraStore((state) => state.resetCalculation);
   const home = dictionary.home;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center font-sans dark:bg-black">
-      <div className="flex w-full flex-col gap-8 bg-white px-4 py-8 shadow-lg sm:px-8 sm:py-12 lg:flex-row lg:gap-10">
-        <div className="flex w-full flex-col items-start justify-center gap-6">
-          <h1 className="mb-2 text-3xl font-bold text-gray-800 dark:text-gray-200 sm:text-4xl">
+    <div className="flex-1">
+      <section className="mx-auto grid min-h-[min(720px,calc(100dvh-64px))] w-full max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:px-8">
+        <div className="max-w-2xl">
+          <p className="mb-5 text-sm font-semibold text-[#315a78]">{home.noRegistration}</p>
+          <h1 className="max-w-xl text-4xl font-semibold leading-[1.08] tracking-tight text-slate-950 sm:text-5xl">
             {home.heroTitle}
           </h1>
-          <h2 className="w-full text-xl font-semibold text-gray-700 dark:text-gray-300 sm:text-2xl lg:w-2/3">
+          <p className="mt-6 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
             {home.heroSubtitle}
-          </h2>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/stepper"
-              className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-gray-800 px-6 py-3 font-bold text-white hover:bg-blue-600 sm:mt-4"
+              onClick={resetCalculation}
+              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-md bg-[#20394d] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#315a78] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#315a78]"
             >
               {home.startSimulation}
-              <FontAwesomeIcon icon={faArrowRight} className="h-5" />
+              <FontAwesomeIcon icon={faArrowRight} className="size-3.5" />
             </Link>
             <Link
               href="/howWeWork"
-              className="mt-0 rounded-lg border border-gray-800 bg-white px-6 py-3 text-center text-gray-800 hover:bg-gray-100 sm:mt-4"
+              className="inline-flex min-h-12 items-center justify-center rounded-md border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#315a78]"
             >
               {home.seeHowItWorks}
             </Link>
           </div>
-          <span className="mt-2 flex flex-row items-center gap-2 text-sm text-neutral-600 dark:text-gray-400 sm:mt-5 sm:text-base">
-            <FontAwesomeIcon icon={faDoorOpen} className="h-4" />
-            {home.noRegistration}
-          </span>
         </div>
 
-        <div className="relative w-full rounded-2xl bg-neutral-200 p-4 sm:p-6 lg:max-w-136">
-          <div className="relative h-80 w-full overflow-hidden rounded-2xl sm:h-96 lg:h-104">
-            <Image
-              src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80"
-              alt="Persona revisando finanzas con calculadora y ordenador"
-              fill
-              sizes="(max-width: 768px) 100vw, 500px"
-              className="object-cover shadow-lg"
-            />
+        <div className="relative min-h-[340px] overflow-hidden rounded-xl bg-slate-200 sm:min-h-[440px]">
+          <Image
+            src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80"
+            alt="Persona revisando sus finanzas"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 48vw"
+            className="object-cover"
+          />
+        </div>
+      </section>
+
+      <section className="border-y border-slate-200 bg-white">
+        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:px-8">
+          <div>
+            <h2 className="max-w-md text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+              {home.precisionTitle}
+            </h2>
+            <p className="mt-4 max-w-md leading-7 text-slate-600">{home.precisionSubtitle}</p>
           </div>
 
-          <div className="mt-4 flex w-full flex-col items-start gap-2 rounded-2xl border border-gray-300 bg-white p-4 shadow-xl dark:border-gray-600 dark:bg-gray-700 sm:max-w-[16rem] lg:absolute lg:-bottom-5 lg:-left-8">
-            <span> {home.suggestedWithholding} </span>
-            <span className="text-3xl font-bold text-gray-800 dark:text-gray-200"> 15.5% </span>
-            <span className="h-1 w-1/2 rounded-full bg-black text-sm" />
+          <div className="grid gap-x-8 sm:grid-cols-2">
+            <article className="border-t-2 border-[#315a78] py-5 sm:row-span-2 sm:py-6">
+              <FontAwesomeIcon icon={faScaleBalanced} className="size-5 text-[#315a78]" />
+              <h3 className="mt-5 text-xl font-semibold text-slate-900">
+                {home.precisionCardTitle}
+              </h3>
+              <p className="mt-2 max-w-sm leading-6 text-slate-600">{home.precisionCardText}</p>
+            </article>
+            <article className="border-t border-slate-200 py-5 sm:py-6">
+              <FontAwesomeIcon icon={faWallet} className="size-5 text-[#315a78]" />
+              <h3 className="mt-4 text-lg font-semibold text-slate-900">
+                {home.multiplePayersCardTitle}
+              </h3>
+              <p className="mt-2 leading-6 text-slate-600">{home.multiplePayersCardText}</p>
+            </article>
+            <article className="border-t border-slate-200 py-5 sm:py-6">
+              <FontAwesomeIcon icon={faArrowTrendUp} className="size-5 text-[#315a78]" />
+              <h3 className="mt-4 text-lg font-semibold text-slate-900">
+                {home.optimizationCardTitle}
+              </h3>
+              <p className="mt-2 leading-6 text-slate-600">{home.optimizationCardText}</p>
+            </article>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="flex w-full flex-col items-start justify-center bg-gray-100 px-4 py-8 sm:px-8 sm:py-12">
-        <div className="flex flex-col items-start">
-          <h1 className="mb-2 text-3xl font-bold text-neutral-800">{home.precisionTitle}</h1>
-          <h2 className="w-full text-sm font-bold text-neutral-500 sm:w-2/3">
-            {home.precisionSubtitle}
+      <section className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16 lg:px-8">
+        <div className="relative min-h-[280px] overflow-hidden rounded-xl bg-slate-200 sm:min-h-[360px]">
+          <Image
+            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80"
+            alt="Gráficos financieros en una pantalla"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+          />
+        </div>
+        <div className="max-w-xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+            {home.realtimeTitle}
           </h2>
-        </div>
-
-        <div className="mt-8 grid w-full gap-4 md:grid-cols-3">
-          <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-4 px-6 pb-8 text-neutral-600 sm:pb-12">
-            <div className="bg-gray-200 w-10 h-10 rounded-lg flex items-center justify-center mb-3 border border-gray-300 inner-shadow dark:bg-gray-700 dark:border-gray-600">
-              <FontAwesomeIcon icon={faScaleBalanced} className="h-3" />
+          <p className="mt-4 leading-7 text-slate-600">{home.realtimeSubtitle}</p>
+          <div className="mt-8 space-y-6">
+            <div className="border-l-2 border-[#315a78] pl-4">
+              <h3 className="font-semibold text-slate-900">{home.multiJurisdictionTitle}</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{home.multiJurisdictionText}</p>
             </div>
-            <span className="font-bold text-2xl pb-6 text-gray-800">
-              {" "}
-              {home.precisionCardTitle}
-            </span>
-            <span> {home.precisionCardText}</span>
-          </div>
-
-          <div className="flex flex-col rounded-2xl border border-gray-700 bg-neutral-800 p-4 px-6 pb-8 text-neutral-200 sm:pb-12">
-            <div className="bg-neutral-700 w-10 h-10 rounded-lg flex items-center justify-center mb-3 border border-gray-700 inner-shadow dark:bg-gray-700 dark:border-gray-600">
-              <FontAwesomeIcon icon={faWallet} className="h-3" />
+            <div className="border-l-2 border-slate-300 pl-4">
+              <h3 className="font-semibold text-slate-900">{home.exportTitle}</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{home.exportText}</p>
             </div>
-            <span className="font-bold text-2xl pb-6 text-zinc-50">
-              {" "}
-              {home.multiplePayersCardTitle}
-            </span>
-            <span> {home.multiplePayersCardText}</span>
-          </div>
-
-          <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-4 px-6 pb-8 sm:pb-12">
-            <div className="bg-gray-200 w-10 h-10 rounded-lg flex items-center justify-center mb-3 border border-gray-300 inner-shadow dark:bg-gray-700 dark:border-gray-600">
-              <FontAwesomeIcon icon={faArrowTrendUp} className="h-3" />
-            </div>
-            <span className="font-bold text-2xl pb-6 text-gray-800">
-              {" "}
-              {home.optimizationCardTitle}
-            </span>
-            <span> {home.optimizationCardText}</span>
           </div>
         </div>
-      </div>
-
-      <div className="flex w-full flex-col items-center justify-center bg-white px-4 py-8 sm:px-8 sm:py-12">
-        <div className="flex w-full max-w-6xl flex-col gap-6 rounded-2xl bg-neutral-100 px-5 py-8 sm:px-8 sm:py-10 lg:flex-row">
-          <div className="flex flex-col lg:w-3/5">
-            <span className="pb-4 text-3xl font-bold text-gray-800 sm:pb-6 sm:text-4xl">
-              {home.realtimeTitle}
-            </span>
-            <span className="font-bold text-neutral-600"> {home.realtimeSubtitle}</span>
-
-            <div className="flex flex-row mt-4 items-center justify-start gap-2">
-              <FontAwesomeIcon icon={faCircleCheck} className="h-6" />
-
-              <div className="flex flex-col ml-2">
-                <span className="font-bold text-neutral-800"> {home.multiJurisdictionTitle}</span>
-                <span className="text-neutral-500"> {home.multiJurisdictionText}</span>
-              </div>
-            </div>
-            <div className="flex flex-row mt-4 items-center justify-start gap-2">
-              <FontAwesomeIcon icon={faCircleCheck} className="h-6" />
-
-              <div className="flex flex-col ml-2">
-                <span className="font-bold text-neutral-800"> {home.exportTitle}</span>
-                <span className="text-neutral-500"> {home.exportText}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative lg:w-2/5 w-full min-h-72 overflow-hidden rounded-2xl border border-gray-200">
-            <Image
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80"
-              alt="Panel de analítica financiera en pantalla"
-              fill
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex w-full flex-col items-center justify-center gap-2 px-4 py-10 sm:px-8 sm:py-12">
-        <span className="text-center text-3xl font-bold text-gray-800 dark:text-gray-200 sm:text-4xl">
-          {home.ctaTitle}
-        </span>
-
-        <span className="mb-3 w-full max-w-2xl text-center text-base text-gray-600 dark:text-gray-400 sm:text-lg">
-          {home.ctaSubtitle}
-        </span>
-
-        <Link
-          href="/stepper"
-          className="mt-3 rounded-xl bg-neutral-800 px-8 py-3 font-bold text-white hover:bg-blue-600 sm:mt-4 sm:px-10 sm:py-4"
-        >
-          {home.simulateNow}
-        </Link>
-      </div>
+      </section>
     </div>
   );
 }

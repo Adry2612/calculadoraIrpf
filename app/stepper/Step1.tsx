@@ -20,7 +20,7 @@ export function Step1({ onNext }: Step1Props) {
   const updatePersonalInfo = useCalculadoraStore((state) => state.updatePersonalInfo);
   const { t } = useI18n();
   const fieldClass =
-    "w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300";
+    "w-full rounded-md border border-slate-300 bg-white p-3 text-slate-900 outline-none transition focus:border-[#315a78] focus:ring-2 focus:ring-[#315a78]/20";
   const retentionOptions = [
     { value: "devolucion-segura", label: t("step1.retentionSafeRefund") },
     { value: "blindado", label: t("step1.retentionShielded") },
@@ -53,14 +53,11 @@ export function Step1({ onNext }: Step1Props) {
   };
 
   return (
-    <div className="flex w-full max-w-4xl flex-col p-5 sm:p-8">
-      <h1 className="mb-3 text-start text-2xl font-bold text-gray-800 dark:text-gray-300 sm:text-3xl">
-        {" "}
+    <div className="flex w-full max-w-4xl flex-col p-5 text-slate-800 sm:p-8">
+      <h1 className="mb-3 text-start text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
         {t("step1.title")}
       </h1>
-      <h2 className="text-sm text-start text-gray-500 dark:text-gray-300 mb-8">
-        {t("step1.subtitle")}
-      </h2>
+      <p className="mb-8 text-start text-sm leading-6 text-slate-600">{t("step1.subtitle")}</p>
 
       <form className="flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
@@ -127,7 +124,7 @@ export function Step1({ onNext }: Step1Props) {
               <button
                 type="button"
                 onClick={handleDecreaseChildren}
-                className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-lg text-gray-800 dark:text-gray-300"
+                className="absolute left-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-md border border-slate-300 bg-slate-50 text-lg text-slate-800 transition-colors hover:bg-slate-100"
                 aria-label={t("step1.decreaseChildrenAria")}
               >
                 -
@@ -142,7 +139,7 @@ export function Step1({ onNext }: Step1Props) {
               <button
                 type="button"
                 onClick={handleIncreaseChildren}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-lg text-gray-800 dark:text-gray-300"
+                className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 rounded-md border border-slate-300 bg-slate-50 text-lg text-slate-800 transition-colors hover:bg-slate-100"
                 aria-label={t("step1.increaseChildrenAria")}
               >
                 +
@@ -169,7 +166,7 @@ export function Step1({ onNext }: Step1Props) {
                 aria-label={t("step1.disabilitySwitchAria")}
                 onClick={handleDisabilityToggle}
                 className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors ${
-                  datosPersonales.discapacidad ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                  datosPersonales.discapacidad ? "bg-[#315a78]" : "bg-slate-300"
                 }`}
               >
                 <span
@@ -226,9 +223,7 @@ export function Step1({ onNext }: Step1Props) {
                   updatePersonalInfo({ ascendientesACargo: !datosPersonales.ascendientesACargo })
                 }
                 className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full transition-colors ${
-                  datosPersonales.ascendientesACargo
-                    ? "bg-green-500"
-                    : "bg-gray-200 dark:bg-gray-700"
+                  datosPersonales.ascendientesACargo ? "bg-green-500" : "bg-slate-300"
                 }`}
               >
                 <span
@@ -259,8 +254,8 @@ export function Step1({ onNext }: Step1Props) {
                 onClick={() => updatePersonalInfo({ retentionPreference: option.value })}
                 className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors sm:rounded-full ${
                   datosPersonales.retentionPreference === option.value
-                    ? "bg-gray-800 text-white"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                    ? "bg-[#20394d] text-white"
+                    : "text-slate-700 hover:bg-slate-100"
                 }`}
               >
                 {option.label}
@@ -284,7 +279,7 @@ export function Step1({ onNext }: Step1Props) {
       <div className="mt-8 flex flex-1 flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
-          className="rounded-lg px-6 py-3 text-gray-800 transition-colors hover:bg-gray-200 sm:hover:bg-gray-700"
+          className="rounded-md border border-slate-300 px-6 py-3 text-slate-700 transition-colors hover:bg-slate-100"
         >
           <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
           {t("step1.back")}
@@ -292,7 +287,7 @@ export function Step1({ onNext }: Step1Props) {
         <button
           type="button"
           onClick={onNext}
-          className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
+          className="rounded-md bg-[#20394d] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#315a78]"
         >
           {t("step1.next")}
           <FontAwesomeIcon icon={faArrowRight} className="ml-2" />

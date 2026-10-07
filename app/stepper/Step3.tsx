@@ -17,21 +17,17 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   };
 
   return (
-    <div className="flex w-full max-w-4xl flex-col p-5 sm:p-8">
-      <h1 className="mb-3 text-start text-2xl font-bold text-gray-800 dark:text-gray-300 sm:text-3xl">
-        {" "}
+    <div className="flex w-full max-w-4xl flex-col p-5 text-slate-800 sm:p-8">
+      <h1 className="mb-3 text-start text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
         {t("step3.title")}{" "}
       </h1>
-      <h2 className="text-sm text-start text-gray-500 dark:text-gray-300 mb-8">
-        {" "}
-        {t("step3.subtitle")}{" "}
-      </h2>
+      <p className="mb-8 text-start text-sm leading-6 text-slate-600">{t("step3.subtitle")} </p>
 
       <div className="flex flex-col gap-4">
         {pagadores.map((pagador, index) => (
           <div
             key={index}
-            className="flex w-full flex-col justify-between gap-3 rounded-lg bg-white p-4 dark:bg-gray-800 sm:flex-row sm:items-center"
+            className="flex w-full flex-col justify-between gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center"
           >
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-300">
@@ -62,20 +58,16 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
       <button
         type="button"
         onClick={onBack}
-        className="w-full mt-4 p-6 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white/60 dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+        className="mt-4 w-full rounded-lg border border-dashed border-slate-300 bg-white p-5 text-slate-600 transition-colors hover:border-slate-400 hover:bg-slate-50"
       >
         {t("step3.addAnotherPayer")}
       </button>
 
-      <div className="mt-4 flex w-full flex-col gap-2 rounded-lg bg-gray-800 p-4 dark:bg-gray-800">
-        <h3 className="text-lg font-semibold text-white dark:text-gray-300">
-          {t("step3.grossTotalTitle")}
-        </h3>
+      <div className="mt-4 flex w-full flex-col gap-2 rounded-lg bg-[#20394d] p-4">
+        <h3 className="text-lg font-semibold text-white">{t("step3.grossTotalTitle")}</h3>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-1">
-          <p className="text-lg text-white dark:text-gray-400">
-            {totalGrossAllPayers.toLocaleString()}€
-          </p>
-          <p className=" border border-gray-500 bg-gray-700  rounded-2xl  px-4 py-2 text-white dark:text-gray-400">
+          <p className="text-lg text-white">{totalGrossAllPayers.toLocaleString()}€</p>
+          <p className="rounded-md border border-white/25 bg-white/10 px-4 py-2 text-white">
             {" "}
             {t("step3.payersDetected", { count: pagadores.length })}{" "}
           </p>
@@ -86,14 +78,14 @@ export function Step3({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         <button
           type="button"
           onClick={onBack}
-          className="rounded-lg px-6 py-3 text-gray-800 transition-colors hover:bg-gray-200 sm:hover:bg-gray-700"
+          className="rounded-md border border-slate-300 px-6 py-3 text-slate-700 transition-colors hover:bg-slate-100"
         >
           {t("step3.back")}
         </button>
         <button
           type="button"
           onClick={onNext}
-          className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
+          className="rounded-md bg-[#20394d] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#315a78]"
         >
           {t("step3.calculateResults")}
         </button>

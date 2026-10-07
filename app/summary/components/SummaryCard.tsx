@@ -1,6 +1,10 @@
 "use client";
 
-import { faCircleCheck, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleCheck,
+  faCircleExclamation,
+  faCircleInfo,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useI18n } from "../../i18n/useI18n";
 
@@ -14,24 +18,42 @@ export function SummaryCard({ label, value, accent = false }: SummaryCardProps) 
   const { t } = useI18n();
   const numericValue = Number.parseFloat(value.replace(/[^0-9,.-]/g, "").replace(",", "."));
   const isRefund = !Number.isNaN(numericValue) && numericValue < 0;
+  const isBalanced = !Number.isNaN(numericValue) && numericValue === 0;
 
   return (
     <div
-      className={`flex flex-col items-end rounded-3xl border p-5 shadow-sm sm:p-6 ${accent ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 bg-white"}`}
+      className={`flex w-full flex-col justify-between gap-5 rounded-2xl border p-5 sm:flex-row sm:items-center sm:p-7 ${accent ? "border-slate-700 bg-[#20394d] text-white" : "border-slate-200 bg-white text-slate-900"}`}
     >
-      <p className={`text-sm font-medium ${accent ? "text-gray-300" : "text-gray-500"}`}>{label}</p>
-      <p className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">{value}</p>
-      <div
-        className={`mt-4 inline-flex items-center gap-2 rounded-lg p-2 px-3 text-xs font-bold uppercase ${isRefund ? "bg-green-100 text-green-800" : "bg-red-200 text-red-800"}`}
-      >
-        {isRefund ? (
-          <FontAwesomeIcon icon={faCircleCheck} />
-        ) : (
-          <FontAwesomeIcon icon={faCircleExclamation} />
-        )}
-
-        <span>{isRefund ? t("summary.toRefund") : t("summary.toSettle")}</span>
+      <div className="flex flex-col items-start gap-3">
+        <p className={`text-sm font-medium ${accent ? "text-slate-300" : "text-slate-600"}`}>
+          {label}
+        </p>
+        <div
+          className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-semibold ${
+            isBalanced
+              ? "bg-slate-200 text-slate-700"
+              : isRefund
+                ? "bg-emerald-100 text-emerald-900"
+                : "bg-rose-100 text-rose-900"
+          }`}
+        >
+          {isBalanced ? (
+            <FontAwesomeIcon icon={faCircleInfo} />
+          ) : isRefund ? (
+            <FontAwesomeIcon icon={faCircleCheck} />
+          ) : (
+            <FontAwesomeIcon icon={faCircleExclamation} />
+          )}
+          <span>
+            {isBalanced
+              ? t("summary.balancedResult")
+              : isRefund
+                ? t("summary.toRefund")
+                : t("summary.toSettle")}
+          </span>
+        </div>
       </div>
+      <p className="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">{value}</p>
     </div>
   );
 }

@@ -13,17 +13,22 @@ export default function Home() {
   const progress = Math.min(100, Math.max(25, step * 25));
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 p-3 font-sans dark:bg-black sm:p-6 lg:p-10">
-      <div className="flex w-full max-w-4xl flex-1 flex-col rounded-3xl bg-gray-200">
-        {/* Stepper */}
-        <div className="flex w-full flex-col p-5 sm:p-8">
-          <h1 className="text-sm mb-3 text-start text-gray-500 dark:text-gray-300">
-            {" "}
-            {t("stepper.stepOf", { step })}{" "}
-          </h1>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-300/80">
+    <div className="flex flex-1 flex-col items-center bg-slate-50 px-4 py-8 sm:px-6 sm:py-12">
+      <div className="flex w-full max-w-4xl flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex w-full flex-col border-b border-slate-200 px-5 py-5 sm:px-8 sm:py-6">
+          <h2 className="mb-3 text-xs font-semibold tracking-wide text-slate-500">
+            {t("stepper.stepOf", { step })}
+          </h2>
+          <div
+            className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100"
+            role="progressbar"
+            aria-valuemin={1}
+            aria-valuemax={4}
+            aria-valuenow={step}
+            aria-label={t("stepper.stepOf", { step })}
+          >
             <span
-              className="block h-full rounded-full bg-gray-800 transition-all dark:bg-gray-600"
+              className="block h-full rounded-full bg-[#315a78] transition-[width] duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
